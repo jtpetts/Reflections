@@ -8,5 +8,5 @@ module.exports = function() {
       config.MongoDBUrl,
       { useNewUrlParser: true }
     )
-    .then(() => winston.info(`Connected to MongoDB ${config.MongoDBUrl}...`));
+    .then(() => winston.info(`Connected to MongoDB...`));
 };
