@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
-import NavBar from "./components/NavBar";
+import NavBar from "./components/xnavBar";
 import Home from "./components/home";
 import Maps from "./components/maps";
 import Images from "./components/images";
