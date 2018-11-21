@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import MapsService from "../services/mapsService";
 import Images from "../services/imageService";
+import AuthService from "../services/authService";
 import Info from "./info";
 
 class Maps extends Component {
@@ -81,6 +82,8 @@ class Maps extends Component {
     const imageFilename = this.state.map ? this.state.map.imageFilename : "";
     const image = Images.get(imageFilename);
 
+    const user = AuthService.getCurrentUser();
+
     return (
       <div ref="element">
         <div>
@@ -103,14 +106,19 @@ class Maps extends Component {
                 />
               </span>
             </div>
-            <div className="col-3" />
-            <button
-              className="btn btn-primary btn-sm"
-              onClick={this.handleEdit}
-            >
-              Edit
-            </button>
           </div>
+          {user && (
+            <div className="row">
+              <div className="col">
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={this.handleEdit}
+                >
+                  Edit
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );

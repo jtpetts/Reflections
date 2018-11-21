@@ -2,4 +2,8 @@ function reflectionsApiUrl() {
   return process.env.REACT_APP_REFLECTIONS_API;
 }
 
-export default { reflectionsApiUrl };
+function reflectionsSentryDSN() {
+  return process.env.REACT_SENTRY_DSN;
+}
+
+export default { reflectionsApiUrl, reflectionsSentryDSN };

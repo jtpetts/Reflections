@@ -1,4 +1,6 @@
 import axios from "axios";
+import { toast } from "react-toastify";
+import logger from "./logService";
 
 function setJwt(authToken) {
   axios.defaults.headers.common["x-auth-token"] = authToken;
@@ -18,11 +20,12 @@ axios.interceptors.response.use(null, error => {
 
   if (expectedError)
     console.log("axios.interceptors.response.use: EXPECTED error");
-  // send to sentry.io
-  else console.log("axios.interceptors.response.use: UN-expected error");
+  else {
+    logger.log(error);
+    toast.error("Error!");
+  }
 
-  // Do something with response error
-  return Promise.reject(error);
+  return Promise.reject(error); // return control to the catch block
 });
 
 export default {

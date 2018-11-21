@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { Link, NavLink } from "react-router-dom";
+import AuthService from "../services/authService";
 
 class NavBar extends Component {
-  state = { isCollapsed: false };
+  state = { isCollapsed: true };
 
   handleToggle = () => {
     this.setState({ isCollapsed: !this.state.isCollapsed });
@@ -15,6 +16,8 @@ class NavBar extends Component {
     const classToggleButton = this.state.isCollapsed
       ? "navbar-toggler navbar-toggler-right collapsed"
       : "navbar-toggler navbar-toggler-right";
+
+    const user = AuthService.getCurrentUser();
 
     return (
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -41,15 +44,19 @@ class NavBar extends Component {
             <NavLink className="nav-item nav-link" to="/maps">
               Maps
             </NavLink>
-            <NavLink className="nav-item nav-link" to="/images">
-              Images
-            </NavLink>
+            {user && (
+              <NavLink className="nav-item nav-link" to="/images">
+                Images
+              </NavLink>
+            )}
             <NavLink className="nav-item nav-link" to="/about">
               About
             </NavLink>
-            <NavLink className="nav-item nav-link" to="/login">
-              Login
-            </NavLink>
+            {!user && (
+              <NavLink className="nav-item nav-link" to="/login">
+                Login
+              </NavLink>
+            )}
           </div>
         </div>
       </nav>

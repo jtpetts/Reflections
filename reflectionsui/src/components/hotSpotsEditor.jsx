@@ -16,25 +16,50 @@ class HotSpotsEditor extends Component {
     activePage: 0,
     pageSize: 5,
     sortColumn: { path: "Name", order: "asc" },
-    map: { hotSpots: [] },
+    maps: [],
+    map: { name: "", hotSpots: [] },
     circleCoords: { x: 0, y: 0 },
     coordsTrackingOn: false,
-    coordsTrackingHotSpot: null
+    coordsTrackingHotSpot: null,
+    zoomUpId: ""
   };
 
   async componentDidMount() {
-    try {
-      const id = this.props.match.params.id;
-      const map = await MapsService.getMap(id);
+    const maps = await MapsService.getMaps();
+    this.setState({ maps });
 
-      if (!map) this.props.history.replace("/notfound");
+    this.initToCurrentMap(maps, this.props.match.params.id);
+  }
+
+  async componentWillReceiveProps(nextProps) {
+    if (this.state && this.state.maps)
+      // skip this the first time in
+      this.initToCurrentMap(this.state.maps, nextProps.match.params.id);
+  }
+
+  initToCurrentMap = (maps, id) => {
+    try {
+      const map = maps.find(m => m._id === id);
+      if (!map) {
+        this.props.history.replace("/notfound");
+        return;
+      }
+
+      console.log("map x", map);
 
       map.hotSpots.map(h => (h.mapId = id));
       this.setState({ map });
+
+      const zoomUpMap = maps.find(m =>
+        m.hotSpots.find(h => h.zoomName === map.name)
+      );
+
+      this.setState({ zoomUpId: zoomUpMap ? zoomUpMap._id : "" });
     } catch (ex) {
+      console.log("ex", ex);
       this.props.history.replace("/notfound");
     }
-  }
+  };
 
   onMouseMove(event) {
     // var domrect = this.refs.element.getBoundingClientRect();
@@ -46,8 +71,6 @@ class HotSpotsEditor extends Component {
       const myLeft = event.clientX - this.refs.image.x;
       const myTop = event.clientY - this.refs.image.y;
 
-      console.log(`x:${myLeft}  y:${myTop}`);
-
       const hotSpot = {
         _id: this.state.coordsTrackingHotSpot._id,
         name: this.state.coordsTrackingHotSpot.name,
@@ -57,6 +80,12 @@ class HotSpotsEditor extends Component {
         x: myLeft,
         y: myTop
       };
+
+      // this.setState({
+      //   positioning: `mouse: (${event.clientX},${
+      //     event.clientY
+      //   }  computed: (${myLeft},${myTop}))`
+      // });
 
       await HotSpotsService.save(this.state.map._id, hotSpot);
 
@@ -68,11 +97,9 @@ class HotSpotsEditor extends Component {
       };
 
       // console.log("new_map", new_map);
-      console.log("hotSpot", hotSpot);
       new_map.hotSpots = this.state.map.hotSpots.filter(
         h => h._id !== hotSpot._id
       );
-      console.log("new_hotspots", new_map.hotSpots);
 
       new_map.hotSpots.push(hotSpot);
       this.setState({ map: new_map });
@@ -91,8 +118,6 @@ class HotSpotsEditor extends Component {
             y: hotSpot.y - circleRadius + yOffset
           }
         });
-
-      console.log("hotSpot", hotSpot);
     }
   };
 
@@ -123,6 +148,14 @@ class HotSpotsEditor extends Component {
     }
 
     this.setState({ coordsTrackingOn: true, coordsTrackingHotSpot: hotSpot });
+  };
+
+  handleZoomDownClick = hotSpot => {
+    this.props.history.push(`/hotspotseditor/${hotSpot.zoomId}`);
+  };
+
+  handleZoomUp = async () => {
+    this.props.history.push(`/hotspotseditor/${this.state.zoomUpId}`);
   };
 
   handlePageChange = activePage => {
@@ -166,7 +199,7 @@ class HotSpotsEditor extends Component {
         <div ref="element" style={{ border: "1px solid red" }}>
           <div className="row">
             <div className="col">
-              <h1>Hot Spots Editor</h1>
+              <h2>Hot Spots for {this.state.map.name}</h2>
             </div>
           </div>
           <div className="row">
@@ -199,6 +232,7 @@ class HotSpotsEditor extends Component {
                   sortColumn={this.state.sortColumn}
                   onCoordinatesMouseOver={this.handleCoordinatesMouseOver}
                   onSetCoordinatesClick={this.handleSetCoordinates}
+                  onZoomDownClick={this.handleZoomDownClick}
                 />
                 <Paginator
                   itemCount={itemCount}
@@ -215,6 +249,14 @@ class HotSpotsEditor extends Component {
                       >
                         New Hot Spot
                       </Link>
+                      {this.state.zoomUpId && (
+                        <button
+                          className="btn btn-primary"
+                          onClick={this.handleZoomUp}
+                        >
+                          Zoom Up
+                        </button>
+                      )}
                     </h3>
                   </div>
                 </div>

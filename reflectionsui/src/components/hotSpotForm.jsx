@@ -2,10 +2,13 @@ import React from "react";
 import Joi from "joi-browser";
 import Form from "./common/form";
 import HotSpotsService from "../services/hotSpotsService";
+import MapsService from "../services/mapsService";
 
 class HotSpotForm extends Form {
   state = {
     data: { name: "", description: "", zoomName: "" },
+    zoomableMaps: [],
+    mapName: "",
     errors: {}
   };
 
@@ -28,6 +31,12 @@ class HotSpotForm extends Form {
         this.props.history.replace("/notfound");
       }
     }
+
+    const { zoomNames, currentMapName } = await this.getZoomableMaps();
+    this.setState({
+      zoomableMaps: zoomNames,
+      mapName: currentMapName
+    });
   }
 
   hotSpotToViewModel(hotSpot) {
@@ -51,12 +60,6 @@ class HotSpotForm extends Form {
   };
 
   doSubmit = async () => {
-    // get the fields and submit to the service, will need auth first.
-    // where to go after save? to hot spot form I should think.
-
-    // yank the hotspot out of the list
-    // update
-
     const hotSpot = { ...this.state.originalHotSpot };
 
     hotSpot.name = this.state.data.name;
@@ -64,19 +67,51 @@ class HotSpotForm extends Form {
     hotSpot.zoomName = this.state.data.zoomName.trim();
 
     const mapId = this.props.match.params.mapId;
-    await HotSpotsService.save(mapId, hotSpot);
 
-    this.props.history.push(`/hotspotseditor/${mapId}`);
+    try {
+      await HotSpotsService.save(mapId, hotSpot);
+
+      this.props.history.push(`/hotspotseditor/${mapId}`);
+    } catch (ex) {
+      const errorMessage = ex.response.data;
+      const isZoomError = errorMessage.search("zoom") >= 0;
+
+      const errors = { ...this.state.errors };
+      errors[isZoomError ? "zoomName" : "name"] = errorMessage;
+      this.setState({ errors });
+    }
+  };
+
+  getZoomableMaps = async () => {
+    const maps = await MapsService.getMaps();
+    let zoomNames = maps.map(m => ({ name: m.name, id: m._id }));
+
+    // exclude the current map's name
+    const mapId = this.props.match.params.mapId;
+    const currentMap = maps.find(m => m._id === mapId);
+    zoomNames = zoomNames.filter(n => n.name !== currentMap.name);
+
+    // locate the map that zooms to this one and exclude that too
+    // it won't eliminate all possible circular loops, but it'll help
+    const zoomParent = maps.find(m =>
+      m.hotSpots.find(h => h.zoomName === currentMap.name)
+    );
+    if (zoomParent)
+      zoomNames = zoomNames.filter(n => n.name !== zoomParent.name);
+
+    return { zoomNames, currentMapName: currentMap.name };
+    // can go crazier and eliminate all zooms from any hot spot of parent
+    // can also go parent of parent
   };
 
   render() {
     return (
       <div>
-        <h1>HotSpot Form</h1>
+        <h2>Hot Spot for {this.state.mapName}</h2>
         <form onSubmit={this.handleSubmit}>
           {this.renderInput("Name", "name")}
           {this.renderInput("Description", "description")}
-          {this.renderInput("Zoom Name", "zoomName")}
+          {this.renderSelect("Zoom Name", "zoomName", this.state.zoomableMaps)}
           {this.renderSubmitButton("Submit")}
         </form>
       </div>

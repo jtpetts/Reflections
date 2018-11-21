@@ -6,17 +6,12 @@ function getApiUrl() {
 }
 
 async function get(mapId, hotSpotId) {
-  try {
-    return (await httpService.get(
-      `${getApiUrl()}${mapId}/hotSpots/${hotSpotId}`
-    )).data;
-  } catch (ex) {}
+  return (await httpService.get(`${getApiUrl()}${mapId}/hotSpots/${hotSpotId}`))
+    .data;
 }
 
 async function save(mapId, hotSpot) {
-  try {
-    await httpService.post(`${getApiUrl()}${mapId}/hotSpots/`, hotSpot);
-  } catch (ex) {}
+  await httpService.post(`${getApiUrl()}${mapId}/hotSpots/`, hotSpot);
 }
 
 export default { get, save };

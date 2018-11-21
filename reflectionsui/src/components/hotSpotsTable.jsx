@@ -27,6 +27,20 @@ class MoviesTable extends Component {
         )
       },
       {
+        key: "Zoom",
+        content: hotSpot =>
+          hotSpot.zoomName ? (
+            <button
+              className="btn btn-primary"
+              onClick={() => this.props.onZoomDownClick(hotSpot)}
+            >
+              Zoom to {hotSpot.zoomName}
+            </button>
+          ) : (
+            ""
+          )
+      },
+      {
         key: "Delete",
         content: hotSpot => <button className="btn btn-danger">Delete</button>
       }

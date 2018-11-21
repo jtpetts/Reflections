@@ -1,3 +1,4 @@
+import jwtDecode from "jwt-decode";
 import HttpService from "./httpService";
 import env from "../env";
 
@@ -24,7 +25,16 @@ function getCurrentJwt() {
   return localStorage.getItem(itemName);
 }
 
+function getCurrentUser() {
+  try {
+    return jwtDecode(getCurrentJwt());
+  } catch (ex) {
+    return null; // null means anonymous login
+  }
+}
+
 export default {
   login,
-  getCurrentJwt
+  getCurrentJwt,
+  getCurrentUser
 };
