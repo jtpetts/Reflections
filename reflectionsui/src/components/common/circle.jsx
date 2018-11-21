@@ -4,7 +4,6 @@ import { circleRadius } from "../../config";
 class Circle extends Component {
   render() {
     var circleStyle = {
-      display: "inline-block",
       backgroundColor: "#0aa34f",
       borderRadius: "50%",
       position: "absolute",
@@ -13,7 +12,8 @@ class Circle extends Component {
       width: circleRadius * 2,
       height: circleRadius * 2,
       opacity: 0.3,
-      pointerEvents: "none"
+      pointerEvents: "none",
+      display: this.props.display
     };
 
     return <div style={circleStyle} />;

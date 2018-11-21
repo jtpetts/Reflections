@@ -7,6 +7,7 @@ import Images from "../services/imageService";
 import HotSpotsTable from "./hotSpotsTable";
 import Paginator from "./common/paginator";
 import Circle from "./common/circle";
+import AreYouSureModal from "./common/areYouSureModal";
 import { circleRadius } from "../config";
 
 //https://moduscreate.com/blog/animated_drag_and_drop_with_react_native/
@@ -21,10 +22,15 @@ class HotSpotsEditor extends Component {
     circleCoords: { x: 0, y: 0 },
     coordsTrackingOn: false,
     coordsTrackingHotSpot: null,
-    zoomUpId: ""
+    zoomUpId: "",
+    showCircle: false,
+    showDeleteModal: false,
+    deleteModalMessage: "",
+    hotSpotToDelete: null
   };
 
   async componentDidMount() {
+    // download all of the maps the first time in
     const maps = await MapsService.getMaps();
     this.setState({ maps });
 
@@ -32,8 +38,8 @@ class HotSpotsEditor extends Component {
   }
 
   async componentWillReceiveProps(nextProps) {
-    if (this.state && this.state.maps)
-      // skip this the first time in
+    // skip this the first time in
+    if (nextProps.match.params.id !== this.props.match.params.id)
       this.initToCurrentMap(this.state.maps, nextProps.match.params.id);
   }
 
@@ -45,32 +51,30 @@ class HotSpotsEditor extends Component {
         return;
       }
 
-      console.log("map x", map);
-
+      // find the current map
       map.hotSpots.map(h => (h.mapId = id));
       this.setState({ map });
 
+      // find the parent's map
       const zoomUpMap = maps.find(m =>
         m.hotSpots.find(h => h.zoomName === map.name)
       );
-
       this.setState({ zoomUpId: zoomUpMap ? zoomUpMap._id : "" });
+
+      // circle
+      this.setState({ showCircle: false });
     } catch (ex) {
       console.log("ex", ex);
       this.props.history.replace("/notfound");
     }
   };
 
-  onMouseMove(event) {
-    // var domrect = this.refs.element.getBoundingClientRect();
-    // this.props.onMouseMove(event.clientX - domrect.left, event.clientY - domrect.top);
-  }
-
   handleImageClick = async event => {
     if (this.state.coordsTrackingOn && this.state.coordsTrackingHotSpot) {
       const myLeft = event.clientX - this.refs.image.x;
       const myTop = event.clientY - this.refs.image.y;
 
+      // rebuild the hotSpot (dropping __v, which confuses the API, maybe should move to map/hs service)
       const hotSpot = {
         _id: this.state.coordsTrackingHotSpot._id,
         name: this.state.coordsTrackingHotSpot.name,
@@ -81,47 +85,43 @@ class HotSpotsEditor extends Component {
         y: myTop
       };
 
-      // this.setState({
-      //   positioning: `mouse: (${event.clientX},${
-      //     event.clientY
-      //   }  computed: (${myLeft},${myTop}))`
-      // });
-
       await HotSpotsService.save(this.state.map._id, hotSpot);
 
-      this.setState({ coordsTrackingHotSpot: hotSpot });
-
-      // copy map, including all of the hot spots but the changed one
-      const new_map = {
-        ...this.state.map
-      };
-
-      // console.log("new_map", new_map);
-      new_map.hotSpots = this.state.map.hotSpots.filter(
-        h => h._id !== hotSpot._id
-      );
+      const new_map = this.copyMapWithoutHotSpot(hotSpot);
 
       new_map.hotSpots.push(hotSpot);
-      this.setState({ map: new_map });
+      const maps = this.replaceMapInMaps(new_map);
+      this.setState({
+        map: new_map,
+        maps,
+        coordsTrackingOn: false,
+        coordsTrackingHotSpot: null
+      });
 
-      var divimage = this.refs.divImage.getBoundingClientRect();
-
-      // the coordinates are relative to the image
-      // the circle is relative to the column div bounding both
-      const xOffset = this.refs.image.x - divimage.x;
-      const yOffset = this.refs.image.y - divimage.y;
-
-      if (hotSpot.x && hotSpot.y)
-        this.setState({
-          circleCoords: {
-            x: hotSpot.x - circleRadius + xOffset,
-            y: hotSpot.y - circleRadius + yOffset
-          }
-        });
+      this.positionCircle(hotSpot);
     }
   };
 
-  handleCoordinatesMouseOver = hotSpot => {
+  copyMapWithoutHotSpot = hotSpot => {
+    const map = {
+      ...this.state.map
+    };
+
+    map.hotSpots = this.state.map.hotSpots.filter(h => h._id !== hotSpot._id);
+    return map;
+  };
+
+  replaceMapInMaps = map => {
+    const maps = this.state.maps.filter(m => m._id !== map._id);
+    maps.push(map);
+    return maps;
+  };
+
+  handleSetCoordsBtnMouseOver = hotSpot => {
+    this.positionCircle(hotSpot);
+  };
+
+  positionCircle = hotSpot => {
     var divimage = this.refs.divImage.getBoundingClientRect();
 
     // the coordinates are relative to the image
@@ -134,19 +134,17 @@ class HotSpotsEditor extends Component {
         circleCoords: {
           x: hotSpot.x - circleRadius + xOffset,
           y: hotSpot.y - circleRadius + yOffset
-        }
+        },
+        showCircle: true
       });
     else
       this.setState({
-        circleCoords: { x: 0, y: 0 }
+        circleCoords: { x: 0, y: 0 },
+        showCircle: false
       });
   };
 
   handleSetCoordinates = hotSpot => {
-    if (this.state.coordsTrackingHotSpot) {
-      // turn off other one
-    }
-
     this.setState({ coordsTrackingOn: true, coordsTrackingHotSpot: hotSpot });
   };
 
@@ -156,6 +154,46 @@ class HotSpotsEditor extends Component {
 
   handleZoomUp = async () => {
     this.props.history.push(`/hotspotseditor/${this.state.zoomUpId}`);
+  };
+
+  handleCloseDeleteModal = () => {
+    this.setState({ showDeleteModal: false });
+  };
+
+  handleDeleteWarning = async hotSpot => {
+    this.setState({
+      showDeleteModal: true,
+      deleteModalMessage: `Are you sure you wish to delete ${
+        hotSpot.name
+      } on map ${this.state.map.name}?`,
+      hotSpotToDelete: hotSpot
+    });
+  };
+
+  handleDelete = async () => {
+    // actually delete
+
+    const originalMap = this.state.map;
+    const originalMaps = this.state.maps;
+
+    const map = this.copyMapWithoutHotSpot(this.state.hotSpotToDelete);
+
+    // replace the map in the maps list
+    this.setState({
+      showDeleteModal: false,
+      map,
+      maps: this.replaceMapInMaps(map)
+    });
+
+    try {
+      await HotSpotsService.deleteHotSpot(
+        map._id,
+        this.state.hotSpotToDelete._id
+      );
+    } catch (ex) {
+      // restore
+      this.setState({ map: originalMap, maps: originalMaps });
+    }
   };
 
   handlePageChange = activePage => {
@@ -187,7 +225,6 @@ class HotSpotsEditor extends Component {
   };
 
   render() {
-    //http://localhost:3001/hotspoteditor/5bd25fdcbfa01e6d10d738ba
     const name = this.state.map ? this.state.map.name : "no map!";
     const imageFilename = this.state.map ? this.state.map.imageFilename : "";
     const image = Images.get(imageFilename);
@@ -196,7 +233,7 @@ class HotSpotsEditor extends Component {
 
     return (
       <React.Fragment>
-        <div ref="element" style={{ border: "1px solid red" }}>
+        <div ref="element">
           <div className="row">
             <div className="col">
               <h2>Hot Spots for {this.state.map.name}</h2>
@@ -204,14 +241,9 @@ class HotSpotsEditor extends Component {
           </div>
           <div className="row">
             <div className="row">
-              <div
-                ref="divImage"
-                className="col"
-                style={{ border: "1px solid red" }}
-              >
+              <div ref="divImage" className="col">
                 <img
                   ref="image"
-                  style={{ border: "1px solid red" }}
                   src={image}
                   alt={name}
                   width={500}
@@ -219,6 +251,7 @@ class HotSpotsEditor extends Component {
                   onClick={this.handleImageClick}
                 />
                 <Circle
+                  display={this.state.showCircle ? "block" : "none"}
                   left={this.state.circleCoords.x}
                   top={this.state.circleCoords.y}
                 />
@@ -227,11 +260,12 @@ class HotSpotsEditor extends Component {
                 <HotSpotsTable
                   hotSpots={hotSpots}
                   onLike={this.handleLike}
-                  onDelete={this.handleDelete}
+                  onDelete={this.handleDeleteWarning}
                   onSort={this.handleSort}
                   sortColumn={this.state.sortColumn}
-                  onCoordinatesMouseOver={this.handleCoordinatesMouseOver}
+                  onCoordinatesMouseOver={this.handleSetCoordsBtnMouseOver}
                   onSetCoordinatesClick={this.handleSetCoordinates}
+                  coordsTrackingHotSpot={this.state.coordsTrackingHotSpot}
                   onZoomDownClick={this.handleZoomDownClick}
                 />
                 <Paginator
@@ -263,6 +297,13 @@ class HotSpotsEditor extends Component {
               </div>
             </div>
           </div>
+          <AreYouSureModal
+            open={this.state.showDeleteModal}
+            onClose={this.handleCloseDeleteModal}
+            onTrigger={this.handleDelete}
+            triggerLabel="Delete"
+            modalMessage={this.state.deleteModalMessage}
+          />
         </div>
       </React.Fragment>
     );

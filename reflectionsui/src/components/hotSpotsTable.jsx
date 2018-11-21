@@ -20,7 +20,12 @@ class MoviesTable extends Component {
           <button
             onMouseOver={() => this.props.onCoordinatesMouseOver(hotSpot)}
             onClick={() => this.props.onSetCoordinatesClick(hotSpot)}
-            className="btn btn-primary"
+            className={
+              this.props.coordsTrackingHotSpot &&
+              hotSpot._id === this.props.coordsTrackingHotSpot._id
+                ? "btn btn-success"
+                : "btn btn-primary"
+            }
           >
             Set Coordinates
           </button>
@@ -42,7 +47,14 @@ class MoviesTable extends Component {
       },
       {
         key: "Delete",
-        content: hotSpot => <button className="btn btn-danger">Delete</button>
+        content: hotSpot => (
+          <button
+            className="btn btn-danger"
+            onClick={() => this.props.onDelete(hotSpot)}
+          >
+            Delete
+          </button>
+        )
       }
     ];
 

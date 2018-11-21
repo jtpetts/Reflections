@@ -14,4 +14,8 @@ async function save(mapId, hotSpot) {
   await httpService.post(`${getApiUrl()}${mapId}/hotSpots/`, hotSpot);
 }
 
-export default { get, save };
+async function deleteHotSpot(mapId, hotSpotId) {
+  await httpService.delete(`${getApiUrl()}${mapId}/hotSpots/${hotSpotId}`);
+}
+
+export default { get, save, deleteHotSpot };

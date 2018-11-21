@@ -16,7 +16,7 @@ class Select extends Component {
             className="custom-select"
             aria-label={`"Select of ${{ name }}"`}
           >
-            <option value="New">Choose...</option>
+            <option value="">Choose...</option>
             {this.props.options.map(opt => (
               <option key={opt.id} value={opt.name}>
                 {opt.name}
