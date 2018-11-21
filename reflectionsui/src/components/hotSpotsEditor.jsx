@@ -259,7 +259,7 @@ class HotSpotsEditor extends Component {
               <div className="col">
                 <HotSpotsTable
                   hotSpots={hotSpots}
-                  onLike={this.handleLike}
+                  mapId={this.state.map ? this.state.map._id : null}
                   onDelete={this.handleDeleteWarning}
                   onSort={this.handleSort}
                   sortColumn={this.state.sortColumn}

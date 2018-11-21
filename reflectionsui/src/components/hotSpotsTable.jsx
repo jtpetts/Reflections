@@ -3,16 +3,21 @@ import Table from "./common/table";
 import { Link } from "react-router-dom";
 //import AuthService from "./../services/authService";
 
-class MoviesTable extends Component {
+class HotSpotsTable extends Component {
   render() {
     const columns = [
       {
         label: "Name",
-        content: hotSpot => (
-          <Link to={`/hotSpotForm/${hotSpot.mapId}/hotSpot/${hotSpot._id}`}>
-            {hotSpot.name}
-          </Link>
-        )
+        content: hotSpot =>
+          this.props.mapId ? (
+            <Link
+              to={`/hotSpotForm/${this.props.mapId}/hotSpot/${hotSpot._id}`}
+            >
+              {hotSpot.name}
+            </Link>
+          ) : (
+            ""
+          )
       },
       {
         key: "Coordinates",
@@ -69,4 +74,4 @@ class MoviesTable extends Component {
   }
 }
 
-export default MoviesTable;
+export default HotSpotsTable;

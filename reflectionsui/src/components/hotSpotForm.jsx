@@ -113,6 +113,16 @@ class HotSpotForm extends Form {
           {this.renderInput("Description", "description")}
           {this.renderSelect("Zoom Name", "zoomName", this.state.zoomableMaps)}
           {this.renderSubmitButton("Submit")}
+          <button
+            className="btn btn-primary"
+            onClick={() =>
+              this.props.history.replace(
+                `/hotspotseditor/${this.props.match.params.mapId}`
+              )
+            }
+          >
+            Cancel
+          </button>
         </form>
       </div>
     );
