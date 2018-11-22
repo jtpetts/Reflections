@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-class CInput extends Component {
+class Input extends Component {
   render() {
     // props: can yank down all the standard input fields
     // really, we want to have handlechange here set the state above.
@@ -19,4 +19,4 @@ class CInput extends Component {
   }
 }
 
-export default CInput;
+export default Input;

@@ -1,11 +1,13 @@
 import React from "react";
 import Joi from "joi-browser";
+import queryString from "query-string";
 import Form from "./common/form";
 import MapsService from "../services/mapsService";
 
 class MapForm extends Form {
   state = {
-    data: { name: "", description: "", imageFilename: "" },
+    data: { name: "", description: "" },
+    imageFilename: "",
     errors: {},
     originalMap: {}
   };
@@ -13,7 +15,10 @@ class MapForm extends Form {
   async componentDidMount() {
     // was ID provided? If so, acquire. If it is "new", then create a new one.
     const id = this.props.match.params.id;
-    if (id !== "New") {
+    if (id === "New") {
+      const { imageFilename } = queryString.parse(this.props.location.search);
+      this.setState({ imageFilename });
+    } else {
       try {
         const map = await MapsService.getMap(id);
 
@@ -22,7 +27,11 @@ class MapForm extends Form {
           return;
         }
 
-        this.setState({ data: this.mapToViewModel(map), originalMap: map });
+        this.setState({
+          data: this.mapToViewModel(map),
+          originalMap: map,
+          imageFilename: map.imageFilename
+        });
       } catch (ex) {
         // redirect to /not-found
         this.props.history.replace("/notfound");
@@ -33,8 +42,7 @@ class MapForm extends Form {
   mapToViewModel(map) {
     return {
       name: map.name,
-      description: map.description,
-      imageFilename: map.imageFilename ? map.imageFilename : ""
+      description: map.description
     };
   }
 
@@ -44,10 +52,7 @@ class MapForm extends Form {
       .label("Name"),
     description: Joi.string()
       .required()
-      .label("Description"),
-    imageFilename: Joi.string()
-      .required()
-      .label("Image Filename")
+      .label("Description")
   };
 
   doSubmit = async () => {
@@ -58,7 +63,7 @@ class MapForm extends Form {
       ...this.state.originalMap,
       name: this.state.data.name,
       description: this.state.data.description,
-      imageFilename: this.state.data.imageFilename
+      imageFilename: this.state.imageFilename
     };
 
     const updatedMap = await MapsService.save(map);
@@ -67,8 +72,6 @@ class MapForm extends Form {
   };
 
   handleEditHotSpots = () => {
-    this.doSubmit();
-
     const id = this.props.match.params.id;
     this.props.history.push(`/hotspotseditor/${id}`);
   };
@@ -78,18 +81,21 @@ class MapForm extends Form {
 
     return (
       <div>
-        <h1>Map Form</h1>
+        <h2>Map</h2>
+        <h4>Image Filename: {this.state.imageFilename}</h4>
         <form onSubmit={this.handleSubmit}>
           {this.renderInput("Name", "name")}
           {this.renderInput("Description", "description")}
-          {this.renderInput("Image Filename", "imageFilename")}
           {this.renderSubmitButton("Submit")}
+          {id && (
+            <button
+              className="btn btn-primary"
+              onClick={this.handleEditHotSpots}
+            >
+              Jump to Hot Spots
+            </button>
+          )}
         </form>
-        {id && (
-          <button className="btn btn-primary" onClick={this.handleEditHotSpots}>
-            Save and Edit Hot Spots
-          </button>
-        )}
       </div>
     );
   }
