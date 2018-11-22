@@ -21,14 +21,17 @@ class ImagesTable extends Component {
       },
       {
         key: "Delete",
-        content: image => (
-          <button
-            className="btn btn-danger"
-            onClick={() => this.props.onDelete(image)}
-          >
-            Delete
-          </button>
-        )
+        content: image =>
+          image.name ? ( // if no name, then there is no map to delete
+            <button
+              className="btn btn-danger"
+              onClick={() => this.props.onDelete(image)}
+            >
+              Delete
+            </button>
+          ) : (
+            ""
+          )
       }
     ];
     return (

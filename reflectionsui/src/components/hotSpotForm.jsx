@@ -1,5 +1,6 @@
 import React from "react";
 import Joi from "joi-browser";
+import _ from "lodash";
 import Form from "./common/form";
 import HotSpotsService from "../services/hotSpotsService";
 import MapsService from "../services/mapsService";
@@ -99,7 +100,9 @@ class HotSpotForm extends Form {
     if (zoomParent)
       zoomNames = zoomNames.filter(n => n.name !== zoomParent.name);
 
-    return { zoomNames, currentMapName: currentMap.name };
+    const sortedZoomNames = _.orderBy(zoomNames, "name", "asc");
+
+    return { zoomNames: sortedZoomNames, currentMapName: currentMap.name };
     // can go crazier and eliminate all zooms from any hot spot of parent
     // can also go parent of parent
   };
