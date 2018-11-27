@@ -4,6 +4,7 @@ const _ = require("lodash");
 const validateObjectId = require("../middleware/validateObjectId");
 const asyncMiddleware = require("../middleware/async");
 const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const { validate, validateHotSpot } = require("../models/MapModel");
 const { MapModel } = require("../models/MapModel");
 
@@ -51,6 +52,7 @@ router.get(
 router.post(
   "/",
   auth,
+  admin,
   asyncMiddleware(async (request, response) => {
     const { error } = validate(request.body);
     if (error) {
@@ -91,6 +93,7 @@ router.post(
 router.put(
   "/",
   auth,
+  admin,
   asyncMiddleware(async (request, response) => {
     delete request.body.__v;
 
@@ -139,6 +142,7 @@ router.put(
 router.delete(
   "/:id",
   auth,
+  admin,
   asyncMiddleware(async (request, response) => {
     const map = await MapModel.deleteOne({ _id: request.params.id });
     if (map.n == 0)

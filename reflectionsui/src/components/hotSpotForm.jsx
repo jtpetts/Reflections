@@ -67,6 +67,13 @@ class HotSpotForm extends Form {
     hotSpot.description = this.state.data.description;
     hotSpot.zoomName = this.state.data.zoomName.trim();
 
+    // if the zoomname changed, then wipe out the zoom id because it is pointing to the wrong image
+    if (
+      this.state.originalHotSpot &&
+      this.state.originalHotSpot.zoomName !== hotSpot.zoomName
+    )
+      hotSpot.zoomId = null;
+
     const mapId = this.props.match.params.mapId;
 
     try {

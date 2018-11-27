@@ -27,58 +27,59 @@ class Info extends Component {
 
       return (
         <React.Fragment>
-          <table style={positioningStyle} pointerEvents="none" display="block">
-            <tbody>
-              <tr>
-                <td
+          <div
+            className="row"
+            style={positioningStyle}
+            pointerEvents="none"
+            display="block"
+          >
+            <div className="row">
+              <div className="col">
+                <div
                   width={`${pointerWidth}px`}
                   height={`${pointerHeight}px`}
                   valign="top"
                 >
                   <Pointer />
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div
-                    className="container"
-                    style={{
-                      backgroundColor: "ivory",
-                      color: "black"
-                    }}
-                  >
-                    <div className="row">
-                      <div className="col">
-                        <b>{hotspot.name}</b>
-                      </div>
+                </div>
+                <div
+                  className="container"
+                  style={{
+                    backgroundColor: "ivory",
+                    color: "black"
+                  }}
+                >
+                  <div className="row">
+                    <div className="col">
+                      <b>{hotspot.name}</b>
                     </div>
-                    <div className="row">
-                      <div className="col">
-                        <p>{hotspot.description}</p>
-                      </div>
-                    </div>
-                    {hotspot.zoomName ? (
-                      <div className="row">
-                        <div className="col">
-                          <button
-                            className="btn btn-primary"
-                            style={{ pointerEvents: "auto" }}
-                            onClick={() =>
-                              this.props.onZoomClick(this.props.hotspot)
-                            }
-                          >
-                            Zoom
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      ""
-                    )}
                   </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  <div className="row">
+                    <div className="col">
+                      <p>{hotspot.description}</p>
+                    </div>
+                  </div>
+                  {hotspot.zoomName ? (
+                    <div className="row">
+                      <div className="col">
+                        <button
+                          className="btn btn-primary"
+                          style={{ pointerEvents: "auto" }}
+                          onClick={() =>
+                            this.props.onZoomClick(this.props.hotspot)
+                          }
+                        >
+                          Zoom
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </React.Fragment>
       );
     } else return <React.Fragment />;

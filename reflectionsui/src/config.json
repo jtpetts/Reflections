@@ -1,6 +1,7 @@
 {
-  "pointerWidth": 36,
-  "pointerHeight": 49,
-  "pointerHotX": 18,
-  "pointerHotY": 49
+  "pointerWidth": 15,
+  "pointerHeight": 21,
+  "pointerHotX": 7,
+  "pointerHotY": 21,
+  "mapWidth": 320
 }

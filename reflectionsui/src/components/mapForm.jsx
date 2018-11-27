@@ -91,6 +91,7 @@ class MapForm extends Form {
             <button
               className="btn btn-primary"
               onClick={this.handleEditHotSpots}
+              style={{ marginLeft: "20px" }}
             >
               Jump to Hot Spots
             </button>

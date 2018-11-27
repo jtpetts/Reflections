@@ -1,6 +1,7 @@
 ﻿const validateObjectId = require("../middleware/validateObjectId");
 const asyncMiddleware = require("../middleware/async");
 const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const express = require("express");
 const router = express.Router({ mergeParams: true }); // to get the mapId param from earlier in the route
 const { MapModel, validateHotSpot } = require("../models/MapModel");
@@ -32,6 +33,7 @@ router.get(
 router.post(
   "/",
   auth,
+  admin,
   asyncMiddleware(async (request, response) => {
     // validate the hotspot
     const { error } = validateHotSpot(request.body);
@@ -104,6 +106,7 @@ router.post(
 router.delete(
   "/:hotSpotId",
   auth,
+  admin,
   asyncMiddleware(async (request, response) => {
     // get the map
     const map = await MapModel.findById(request.params.mapId);

@@ -21,6 +21,10 @@ async function login(user, password) {
   HttpService.setJwt(token);
 }
 
+async function logout() {
+  localStorage.removeItem(itemName);
+}
+
 function getCurrentJwt() {
   return localStorage.getItem(itemName);
 }
@@ -35,6 +39,7 @@ function getCurrentUser() {
 
 export default {
   login,
+  logout,
   getCurrentJwt,
   getCurrentUser
 };

@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import _ from "lodash";
 import MapsService from "../services/mapsService";
 import HotSpotsService from "../services/hotSpotsService";
@@ -8,7 +7,7 @@ import HotSpotsTable from "./hotSpotsTable";
 import Paginator from "./common/paginator";
 import Pointer from "./common/pointer";
 import AreYouSureModal from "./common/areYouSureModal";
-import { pointerHotX, pointerHotY } from "../config";
+import { pointerHotX, pointerHotY, mapWidth } from "../config";
 
 //https://moduscreate.com/blog/animated_drag_and_drop_with_react_native/
 
@@ -132,8 +131,8 @@ class HotSpotsEditor extends Component {
     if (hotSpot.x && hotSpot.y)
       this.setState({
         circleCoords: {
-          x: hotSpot.x - pointerHotX + xOffset,
-          y: hotSpot.y - pointerHotY + yOffset
+          x: hotSpot.x + xOffset - pointerHotX,
+          y: hotSpot.y + yOffset - pointerHotY
         },
         showCircle: true
       });
@@ -150,6 +149,10 @@ class HotSpotsEditor extends Component {
 
   handleZoomDownClick = hotSpot => {
     this.props.history.push(`/hotspotseditor/${hotSpot.zoomId}`);
+  };
+
+  handleNewHotSpot = () => {
+    this.props.history.push(`/hotSpotForm/${this.state.map._id}/hotSpot/New`);
   };
 
   handleZoomUp = async () => {
@@ -246,7 +249,7 @@ class HotSpotsEditor extends Component {
                   ref="image"
                   src={image}
                   alt={name}
-                  width={320}
+                  width={mapWidth}
                   onMouseMove={this.onMouseMove}
                   onClick={this.handleImageClick}
                 />
@@ -284,16 +287,17 @@ class HotSpotsEditor extends Component {
                 <div className="row">
                   <div className="col">
                     <h3>
-                      <Link
-                        className="badge badge-primary"
-                        to={`/hotSpotForm/${this.state.map._id}/hotSpot/New`}
+                      <button
+                        className="btn btn-primary"
+                        onClick={this.handleNewHotSpot}
                       >
                         New Hot Spot
-                      </Link>
+                      </button>
                       {this.state.zoomUpId && (
                         <button
                           className="btn btn-primary"
                           onClick={this.handleZoomUp}
+                          style={{ marginLeft: "20px" }}
                         >
                           Zoom Up
                         </button>

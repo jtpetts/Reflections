@@ -73,14 +73,18 @@ class NavBar extends Component {
             >
               About
             </NavLink>
-            {!user && (
-              <NavLink
-                className="nav-item nav-link"
-                to="/login"
-                onClick={this.collapse}
-              >
-                Login
-              </NavLink>
+            {user && (
+              <React.Fragment>
+                <NavLink
+                  className="nav-item nav-link"
+                  to="/logout"
+                  onClick={this.collapse}
+                >
+                  Logout
+                </NavLink>
+
+                <label className="nav-item nav-link">{user.name}</label>
+              </React.Fragment>
             )}
           </div>
         </div>

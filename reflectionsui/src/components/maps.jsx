@@ -3,6 +3,7 @@ import MapsService from "../services/mapsService";
 import Images from "../services/imageService";
 import AuthService from "../services/authService";
 import Info from "./info";
+import { mapWidth } from "../config";
 
 class Maps extends Component {
   state = { map: {}, imageOffset: { x: 0, y: 0 }, breadCrumbs: [] };
@@ -87,10 +88,18 @@ class Maps extends Component {
   }
 
   handleMouseClick = event => {
+    var divImageX = this.refs.imageXRelative.getBoundingClientRect();
+    var divImageY = this.refs.imageYRelative.getBoundingClientRect();
+
+    // the coordinates are relative to the image
+    // the circle is relative to the column div bounding both
+    const xOffset = this.refs.image.x - divImageX.x;
+    const yOffset = this.refs.image.y - divImageY.y;
+
     this.setState({
       imageOffset: {
-        x: this.refs.image.offsetLeft,
-        y: this.refs.image.offsetTop
+        x: this.refs.image.offsetLeft + xOffset,
+        y: this.refs.image.offsetTop + yOffset
       }
     });
 
@@ -108,24 +117,26 @@ class Maps extends Component {
     // edit and new buttons on the right
     // use one of the layout thingies
 
-    const name = this.state.map ? this.state.map.name : "no map!";
+    const name = this.state.map.name
+      ? this.state.map.name
+      : "Loading maps, please wait.";
     const imageFilename = this.state.map ? this.state.map.imageFilename : "";
     const image = Images.get(imageFilename);
 
     const user = AuthService.getCurrentUser();
 
     return (
-      <div ref="element">
+      <div>
         <div>
-          <div className="row">
+          <div ref="imageXRelative" className="row">
             <div className="col">
               <h2>{name}</h2>
-              <span>
+              <div ref="imageYRelative" style={{ position: "relative" }}>
                 <img
                   ref="image"
                   src={image}
-                  alt={name}
-                  width={320}
+                  alt={"Map"}
+                  width={mapWidth}
                   onClick={this.handleMouseClick}
                 />
                 <Info
@@ -133,7 +144,7 @@ class Maps extends Component {
                   offset={this.state.imageOffset}
                   onZoomClick={this.handleZoomClick}
                 />
-              </span>
+              </div>
             </div>
             <div className="col">
               {this.state.breadCrumbs.map(b => (

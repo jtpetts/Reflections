@@ -196,12 +196,20 @@ describe("/api/Maps", () => {
   //__________________________________________________________________________________________________________
   describe("POST /", () => {
     let token;
+    let guestToken;
     let map;
 
     beforeEach(async () => {
       token = new UserModel({
         name: "siby",
-        email: "siby@gmail.com"
+        email: "siby@gmail.com",
+        roles: "abiding"
+      }).generateAuthToken();
+
+      guestToken = new UserModel({
+        name: "guest",
+        email: "guest@guest.com",
+        roles: "guest"
       }).generateAuthToken();
 
       map = {
@@ -235,6 +243,14 @@ describe("/api/Maps", () => {
       const response = await execute();
 
       expect(response.status).toBe(401);
+    });
+
+    it("should return 403 if client is logged in as guest", async () => {
+      token = guestToken;
+
+      const response = await execute();
+
+      expect(response.status).toBe(403);
     });
 
     it("should return 400 if client submits a bogus token", async () => {
@@ -351,7 +367,8 @@ describe("/api/Maps", () => {
     beforeEach(async () => {
       token = new UserModel({
         name: "siby",
-        email: "siby@gmail.com"
+        email: "siby@gmail.com",
+        roles: "abiding"
       }).generateAuthToken();
 
       // grab the two cities record
@@ -457,7 +474,8 @@ describe("/api/Maps", () => {
     beforeEach(async () => {
       token = new UserModel({
         name: "siby",
-        email: "siby@gmail.com"
+        email: "siby@gmail.com",
+        roles: "abiding"
       }).generateAuthToken();
     });
 

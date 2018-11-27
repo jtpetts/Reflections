@@ -5,7 +5,7 @@ import Home from "./components/home";
 import Maps from "./components/maps";
 import Images from "./components/images";
 import About from "./components/about";
-import Login from "./components/login";
+import Logout from "./components/logout";
 import MapForm from "./components/mapForm";
 import HotSpotsEditor from "./components/hotSpotsEditor";
 import HotSpotForm from "./components/hotSpotForm";
@@ -24,7 +24,7 @@ class App extends Component {
               <Route path="/maps" component={Maps} />
               <Route path="/images" component={Images} />
               <Route path="/about" component={About} />
-              <Route path="/login" component={Login} />
+              <Route path="/logout" component={Logout} />
               <Route path="/mapform/:id" component={MapForm} />
               <Route path="/hotspotseditor/:id" component={HotSpotsEditor} />
               <Route
