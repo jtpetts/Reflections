@@ -1,24 +1,28 @@
 import React, { Component } from "react";
 import Table from "./common/table";
+import { Link } from "react-router-dom";
 //import AuthService from "./../services/authService";
 
 class ImagesTable extends Component {
   render() {
     const columns = [
-      { label: "Name", path: "name" },
-      { label: "Image Filename", path: "imageFilename" },
-      { label: "Hot Spot Count", path: "hotSpotCount" },
       {
-        key: "Edit",
+        label: "Name",
+        key: "name",
         content: image => (
-          <button
-            className="btn btn-primary"
-            onClick={() => this.props.onEdit(image)}
+          <Link
+            to={
+              image.isImageOnly
+                ? `/mapForm/New?imageFilename=${image.imageFilename}`
+                : `/mapForm/${image._id}`
+            }
           >
-            Edit
-          </button>
+            {image.isImageOnly ? "Create Map Entry" : image.name}
+          </Link>
         )
       },
+      { label: "Image Filename", path: "imageFilename" },
+      { label: "Hot Spot Count", path: "hotSpotCount" },
       {
         key: "Delete",
         content: image =>

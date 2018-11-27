@@ -6,9 +6,9 @@ import HotSpotsService from "../services/hotSpotsService";
 import Images from "../services/imageService";
 import HotSpotsTable from "./hotSpotsTable";
 import Paginator from "./common/paginator";
-import Circle from "./common/circle";
+import Pointer from "./common/pointer";
 import AreYouSureModal from "./common/areYouSureModal";
-import { circleRadius } from "../config";
+import { pointerHotX, pointerHotY } from "../config";
 
 //https://moduscreate.com/blog/animated_drag_and_drop_with_react_native/
 
@@ -132,8 +132,8 @@ class HotSpotsEditor extends Component {
     if (hotSpot.x && hotSpot.y)
       this.setState({
         circleCoords: {
-          x: hotSpot.x - circleRadius + xOffset,
-          y: hotSpot.y - circleRadius + yOffset
+          x: hotSpot.x - pointerHotX + xOffset,
+          y: hotSpot.y - pointerHotY + yOffset
         },
         showCircle: true
       });
@@ -246,15 +246,22 @@ class HotSpotsEditor extends Component {
                   ref="image"
                   src={image}
                   alt={name}
-                  width={500}
+                  width={320}
                   onMouseMove={this.onMouseMove}
                   onClick={this.handleImageClick}
                 />
-                <Circle
-                  display={this.state.showCircle ? "block" : "none"}
-                  left={this.state.circleCoords.x}
-                  top={this.state.circleCoords.y}
-                />
+                <div
+                  style={{
+                    position: "absolute",
+                    left: this.state.circleCoords.x,
+                    top: this.state.circleCoords.y,
+                    opacity: 0.7,
+                    pointerEvents: "none",
+                    display: this.state.showCircle ? "block" : "none"
+                  }}
+                >
+                  <Pointer />
+                </div>
               </div>
               <div className="col">
                 <HotSpotsTable

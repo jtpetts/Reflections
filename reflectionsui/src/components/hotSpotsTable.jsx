@@ -20,6 +20,7 @@ class HotSpotsTable extends Component {
           )
       },
       {
+        label: "Set Coordinates",
         key: "Coordinates",
         content: hotSpot => (
           <button
@@ -37,6 +38,7 @@ class HotSpotsTable extends Component {
         )
       },
       {
+        label: "Zoom?",
         key: "Zoom",
         content: hotSpot =>
           hotSpot.zoomName ? (
@@ -51,6 +53,7 @@ class HotSpotsTable extends Component {
           )
       },
       {
+        label: "Delete?",
         key: "Delete",
         content: hotSpot => (
           <button

@@ -1,3 +1,6 @@
 {
-  "circleRadius": 20
+  "pointerWidth": 36,
+  "pointerHeight": 49,
+  "pointerHotX": 18,
+  "pointerHotY": 49
 }

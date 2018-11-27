@@ -6,11 +6,13 @@ import imageMarais from "../images/Marais.jpg";
 import imageSuburbs from "../images/Suburbs.jpg";
 import imageBelowWarehouse from "../images/BelowWarehouse.jpg";
 import imageArena from "../images/Arena.jpg";
-import imageIceWizardsPrison from "../images/IceWizardsPrison.jpg";
+import imageMoonWizardsPrison from "../images/MoonWizardsPrison.jpg";
 import imageKaufen from "../images/Kaufen.jpg";
 import imageMoonGarden from "../images/MoonGarden.jpg";
 import imageThroneRoom from "../images/ThroneRoom.jpg";
 import imageCursedForest from "../images/CursedForest.jpg";
+import imageEiserune from "../images/Eiserune.jpg";
+import imageUnderMountain from "../images/UnderMountain.jpg";
 
 const imageList = [
   { imageFilename: "TwoCities.jpg", image: imageTwoCities },
@@ -21,11 +23,13 @@ const imageList = [
   { imageFilename: "Suburbs.jpg", image: imageSuburbs },
   { imageFilename: "BelowWarehouse.jpg", image: imageBelowWarehouse },
   { imageFilename: "Arena.jpg", image: imageArena },
-  { imageFilename: "IceWizardsPrison.jpg", image: imageIceWizardsPrison },
+  { imageFilename: "MoonWizardsPrison.jpg", image: imageMoonWizardsPrison },
   { imageFilename: "Kaufen.jpg", image: imageKaufen },
   { imageFilename: "MoonGarden.jpg", image: imageMoonGarden },
   { imageFilename: "ThroneRoom.jpg", image: imageThroneRoom },
-  { imageFilename: "CursedForest.jpg", image: imageCursedForest }
+  { imageFilename: "CursedForest.jpg", image: imageCursedForest },
+  { imageFilename: "Eiserune.jpg", image: imageEiserune },
+  { imageFilename: "UnderMountain.jpg", image: imageUnderMountain }
 ];
 
 function get(imageFilename) {

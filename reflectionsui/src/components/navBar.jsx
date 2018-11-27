@@ -9,6 +9,10 @@ class NavBar extends Component {
     this.setState({ isCollapsed: !this.state.isCollapsed });
   };
 
+  collapse = () => {
+    this.setState({ isCollapsed: true });
+  };
+
   render() {
     const classNavbar = this.state.isCollapsed
       ? "collapse navbar-collapse"
@@ -38,22 +42,43 @@ class NavBar extends Component {
         </button>
         <div className={classNavbar} id="navbarNavAltMarkup">
           <div className="navbar-nav">
-            <NavLink className="nav-item nav-link active" to="/">
-              Home <span className="sr-only">(current)</span>
+            <NavLink
+              className="nav-item nav-link"
+              exact
+              to="/"
+              onClick={this.collapse}
+            >
+              Home
             </NavLink>
-            <NavLink className="nav-item nav-link" to="/maps">
+            <NavLink
+              className="nav-item nav-link"
+              to="/maps"
+              onClick={this.collapse}
+            >
               Maps
             </NavLink>
             {user && (
-              <NavLink className="nav-item nav-link" to="/images">
+              <NavLink
+                className="nav-item nav-link"
+                to="/images"
+                onClick={this.collapse}
+              >
                 Images
               </NavLink>
             )}
-            <NavLink className="nav-item nav-link" to="/about">
+            <NavLink
+              className="nav-item nav-link"
+              to="/about"
+              onClick={this.collapse}
+            >
               About
             </NavLink>
             {!user && (
-              <NavLink className="nav-item nav-link" to="/login">
+              <NavLink
+                className="nav-item nav-link"
+                to="/login"
+                onClick={this.collapse}
+              >
                 Login
               </NavLink>
             )}

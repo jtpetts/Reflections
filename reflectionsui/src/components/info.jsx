@@ -1,6 +1,11 @@
 import React, { Component } from "react";
-import Circle from "./common/circle";
-import { circleRadius } from "../config";
+import {
+  pointerWidth,
+  pointerHeight,
+  pointerHotX,
+  pointerHotY
+} from "../config";
+import Pointer from "./common/pointer";
 
 class Info extends Component {
   state = {};
@@ -8,56 +13,76 @@ class Info extends Component {
     const hotspot = this.props.hotspot;
 
     if (this.props.hotspot) {
-      const left = this.props.hotspot.x + this.props.offset.x - circleRadius;
-      const top = this.props.hotspot.y + this.props.offset.y - circleRadius;
+      const left = this.props.hotspot.x + this.props.offset.x - pointerHotX;
+      const top = this.props.hotspot.y + this.props.offset.y - pointerHotY;
 
       const positioningStyle = {
         position: "absolute",
         left: `${left}px`,
         top: `${top}px`,
-        border: "1px solid red"
+        opacity: 0.7,
+        zIndex: 99, // put the info panel on top of everything
+        pointerEvents: "none" // and allow clicks to go through
       };
-
-      // position: "absolute",
-      // left: `${this.props.left}px`,
-      // top: `${this.props.top}px`,
 
       return (
         <React.Fragment>
-          <div className="NoPointer" style={positioningStyle}>
-            <Circle />
-            <div
-              style={{
-                display: "inline-block",
-                backgroundColor: "#0aa34f",
-                borderRadius: "50%",
-                width: circleRadius * 2,
-                height: circleRadius * 2,
-                opacity: 0.3,
-                pointerEvents: "none"
-              }}
-            />
-            <label className="Info">{hotspot.name}</label>
-            {hotspot.zoomName ? (
-              <button
-                onClick={() => this.props.onZoomClick(this.props.hotspot)}
-              >
-                Zoom
-              </button>
-            ) : (
-              ""
-            )}
-            <br />
-            <label className="Info">{hotspot.description}</label>
-          </div>
+          <table style={positioningStyle} pointerEvents="none" display="block">
+            <tbody>
+              <tr>
+                <td
+                  width={`${pointerWidth}px`}
+                  height={`${pointerHeight}px`}
+                  valign="top"
+                >
+                  <Pointer />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div
+                    className="container"
+                    style={{
+                      backgroundColor: "ivory",
+                      color: "black"
+                    }}
+                  >
+                    <div className="row">
+                      <div className="col">
+                        <b>{hotspot.name}</b>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col">
+                        <p>{hotspot.description}</p>
+                      </div>
+                    </div>
+                    {hotspot.zoomName ? (
+                      <div className="row">
+                        <div className="col">
+                          <button
+                            className="btn btn-primary"
+                            style={{ pointerEvents: "auto" }}
+                            onClick={() =>
+                              this.props.onZoomClick(this.props.hotspot)
+                            }
+                          >
+                            Zoom
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </React.Fragment>
       );
     } else return <React.Fragment />;
   }
 }
-
-// document.getElementById("endTimeLabel").style.display = 'none';
-// document.getElementById("endTimeLabel").style.display = 'block';
-// document.getElementById("endTimeLabel").style.display = 'inline';
 
 export default Info;

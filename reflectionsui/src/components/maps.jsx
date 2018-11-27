@@ -5,7 +5,7 @@ import AuthService from "../services/authService";
 import Info from "./info";
 
 class Maps extends Component {
-  state = { map: {}, imageOffset: { x: 0, y: 0 } };
+  state = { map: {}, imageOffset: { x: 0, y: 0 }, breadCrumbs: [] };
 
   async componentDidMount() {
     await this.initMap(this.props.match.params.mapName);
@@ -23,6 +23,39 @@ class Maps extends Component {
     const map = await MapsService.getMapByName(mapName);
     // if it failed to get the map go to not found
     this.setState({ map });
+
+    await this.locateBreadcrumbs();
+  };
+
+  findHotSpotWithZoomName = searchMapName => {
+    return function findHotSpot(map) {
+      const hotSpot = map.hotSpots.find(h => h.zoomName === searchMapName);
+      return hotSpot ? map.name : false;
+    };
+  };
+
+  locateBreadcrumbs = async () => {
+    const maps = await MapsService.getMaps();
+
+    let searchMapName = this.state.map.name;
+    const breadCrumbs = [];
+
+    let parent;
+    do {
+      parent = maps.find(this.findHotSpotWithZoomName(searchMapName));
+      if (parent) {
+        breadCrumbs.push(parent.name);
+        searchMapName = parent.name;
+      }
+      if (breadCrumbs.length > 10) break;
+    } while (parent);
+
+    breadCrumbs.reverse(); // visually best with top of tree on the top
+    this.setState({ breadCrumbs });
+  };
+
+  handleBreadCrumb = breadCrumb => {
+    this.props.history.push(`/maps/${breadCrumb}`);
   };
 
   handleEdit = () => {
@@ -50,13 +83,10 @@ class Maps extends Component {
     });
 
     if (closestDist < 100) return closestHotspot;
-
     return null;
   }
 
   handleMouseClick = event => {
-    const domrect = this.refs.element.getBoundingClientRect();
-
     this.setState({
       imageOffset: {
         x: this.refs.image.offsetLeft,
@@ -65,8 +95,8 @@ class Maps extends Component {
     });
 
     const closestHotspot = this.findClosestHotspot(
-      event.clientX - domrect.left - this.refs.image.offsetLeft,
-      event.clientY - domrect.top - this.refs.image.offsetTop
+      event.clientX - this.refs.image.x,
+      event.clientY - this.refs.image.y
     );
 
     if (closestHotspot != null)
@@ -95,16 +125,29 @@ class Maps extends Component {
                   ref="image"
                   src={image}
                   alt={name}
-                  width={500}
+                  width={320}
                   onClick={this.handleMouseClick}
                 />
                 <Info
-                  style={{ pointerEvents: "none" }}
                   hotspot={this.state.selectedHotSpot}
                   offset={this.state.imageOffset}
                   onZoomClick={this.handleZoomClick}
                 />
               </span>
+            </div>
+            <div className="col">
+              {this.state.breadCrumbs.map(b => (
+                <React.Fragment key={b}>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    style={{ marginBottom: "10px" }}
+                    onClick={() => this.handleBreadCrumb(b)}
+                  >
+                    {b}
+                  </button>
+                  <br />
+                </React.Fragment>
+              ))}
             </div>
           </div>
           {user && (

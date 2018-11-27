@@ -32,7 +32,8 @@ class Images extends Component {
       name: m.name,
       imageFilename: m.imageFilename,
       _id: m._id,
-      hotSpotCount: m.hotSpots ? m.hotSpots.length : 0
+      hotSpotCount: m.hotSpots ? m.hotSpots.length : 0,
+      isImageOnly: false
     }));
 
     const images = ImagesService.getImages();
@@ -43,7 +44,8 @@ class Images extends Component {
           name: "",
           imageFilename: i.imageFilename,
           _id: i.imageFilename,
-          hotSpotCount: 0
+          hotSpotCount: 0,
+          isImageOnly: true
         }))
     );
 
@@ -131,7 +133,7 @@ class Images extends Component {
       <React.Fragment>
         <div className="row">
           <div className="col">
-            <h1>Images</h1>
+            <h2>Images</h2>
           </div>
         </div>
         <div className="row">

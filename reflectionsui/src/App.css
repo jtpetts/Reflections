@@ -41,3 +41,7 @@
 .NoPointer {
   pointer-events: "none";
 }
+
+.pointerEventsAuto {
+  pointer-events: "auto";
+}

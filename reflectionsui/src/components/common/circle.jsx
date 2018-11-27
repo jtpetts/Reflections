@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { circleRadius } from "../../config";
+import { bloopWidth, bloopHeight } from "../../config";
 
 class Circle extends Component {
   render() {
@@ -9,8 +9,8 @@ class Circle extends Component {
       position: "absolute",
       left: this.props.left,
       top: this.props.top,
-      width: circleRadius * 2,
-      height: circleRadius * 2,
+      width: bloopWidth,
+      height: bloopHeight,
       opacity: 0.3,
       pointerEvents: "none",
       display: this.props.display
