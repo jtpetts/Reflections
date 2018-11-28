@@ -17,25 +17,23 @@ class App extends Component {
     return (
       <React.Fragment>
         <NavBar />
-        <main className="container">
-          <div>
-            <Switch>
-              <Route path="/maps/:mapName" component={Maps} />
-              <Route path="/maps" component={Maps} />
-              <Route path="/images" component={Images} />
-              <Route path="/about" component={About} />
-              <Route path="/logout" component={Logout} />
-              <Route path="/mapform/:id" component={MapForm} />
-              <Route path="/hotspotseditor/:id" component={HotSpotsEditor} />
-              <Route
-                path="/hotspotform/:mapId/hotSpot/:hotSpotId"
-                component={HotSpotForm}
-              />
-              <Route path="/notfound" component={NotFound} />
-              <Route path="/" component={Home} exact />
-              <Redirect to="/notfound" />
-            </Switch>
-          </div>
+        <main className="fullHeight container" style={{ maxWidth: "none" }}>
+          <Switch>
+            <Route path="/maps/:mapName" component={Maps} />
+            <Route path="/maps" component={Maps} />
+            <Route path="/images" component={Images} />
+            <Route path="/about" component={About} />
+            <Route path="/logout" component={Logout} />
+            <Route path="/mapform/:id" component={MapForm} />
+            <Route path="/hotspotseditor/:id" component={HotSpotsEditor} />
+            <Route
+              path="/hotspotform/:mapId/hotSpot/:hotSpotId"
+              component={HotSpotForm}
+            />
+            <Route path="/notfound" component={NotFound} />
+            <Route path="/" component={Home} exact />
+            <Redirect to="/notfound" />
+          </Switch>
         </main>
       </React.Fragment>
     );

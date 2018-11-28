@@ -45,3 +45,8 @@
 .pointerEventsAuto {
   pointer-events: "auto";
 }
+
+html,
+body {
+  height: 100%;
+}

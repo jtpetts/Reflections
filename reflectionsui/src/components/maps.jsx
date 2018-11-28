@@ -9,23 +9,23 @@ class Maps extends Component {
   state = { map: {}, imageOffset: { x: 0, y: 0 }, breadCrumbs: [] };
 
   async componentDidMount() {
-    await this.initMap(this.props.match.params.mapName);
+    const maps = await MapsService.getMaps();
+    this.setState({ maps });
+
+    await this.initMap(maps, this.props.match.params.mapName);
   }
 
   async componentWillReceiveProps(nextProps) {
-    await this.initMap(nextProps.match.params.mapName);
-
-    this.setState({ selectedHotSpot: null });
+    await this.initMap(this.state.maps, nextProps.match.params.mapName);
   }
 
-  initMap = async mapName => {
+  initMap = (maps, mapName) => {
     if (!mapName) mapName = "Two Cities"; // move to config
 
-    const map = await MapsService.getMapByName(mapName);
-    // if it failed to get the map go to not found
-    this.setState({ map });
+    const map = maps.find(m => m.name === mapName);
+    const breadCrumbs = this.locateBreadcrumbs(maps, map);
 
-    await this.locateBreadcrumbs();
+    this.setState({ breadCrumbs, map, selectedHotSpot: null });
   };
 
   findHotSpotWithZoomName = searchMapName => {
@@ -35,10 +35,8 @@ class Maps extends Component {
     };
   };
 
-  locateBreadcrumbs = async () => {
-    const maps = await MapsService.getMaps();
-
-    let searchMapName = this.state.map.name;
+  locateBreadcrumbs = (maps, map) => {
+    let searchMapName = map.name;
     const breadCrumbs = [];
 
     let parent;
@@ -52,7 +50,7 @@ class Maps extends Component {
     } while (parent);
 
     breadCrumbs.reverse(); // visually best with top of tree on the top
-    this.setState({ breadCrumbs });
+    return breadCrumbs;
   };
 
   handleBreadCrumb = breadCrumb => {

@@ -125,6 +125,7 @@ class HotSpotForm extends Form {
           {this.renderSubmitButton("Submit")}
           <button
             className="btn btn-primary"
+            style={{ marginLeft: "20px" }}
             onClick={() =>
               this.props.history.replace(
                 `/hotspotseditor/${this.props.match.params.mapId}`

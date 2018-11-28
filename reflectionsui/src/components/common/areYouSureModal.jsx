@@ -10,7 +10,11 @@ class AreYouSureModal extends Component {
         <button className="btn btn-danger" onClick={this.props.onTrigger}>
           {this.props.triggerLabel}
         </button>
-        <button className="btn btn-primary" onClick={this.props.onClose}>
+        <button
+          className="btn btn-primary"
+          style={{ marginLeft: "20px" }}
+          onClick={this.props.onClose}
+        >
           Cancel
         </button>
       </Modal>
