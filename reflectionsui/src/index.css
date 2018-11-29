@@ -22,10 +22,16 @@ code {
   width: 100%;
 }
 
+.aboutSection {
+  min-height: 400px;
+  width: 100%;
+  padding-top: 20px;
+}
+
 .centeredSectionText {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-left: 20%;
-  padding-right: 20%;
+  padding-left: 10%;
+  padding-right: 10%;
 }

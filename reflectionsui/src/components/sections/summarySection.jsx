@@ -11,7 +11,7 @@ class SummarySection extends Component {
         <div className="fullSection centeredSectionText">
           <center>
             <h2>Reflections of the Lost</h2>
-            <font style={{ fontSize: "130%" }}>
+            <font style={{ fontSize: "100%" }}>
               <p>
                 Ever meet faeries when you were a small child? Sophie did. She
                 has seen them many times since, but they have been too skittish
