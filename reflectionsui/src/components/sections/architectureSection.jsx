@@ -12,7 +12,7 @@ class architectureSection extends Component {
           </div>
         </div>
         <div className="row justify-content-center">
-          <div className="col col-aboutCentered">
+          <div className="col centeredSingleColumn">
             <ul
               style={{
                 margin: "auto",

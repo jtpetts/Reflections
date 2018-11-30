@@ -27,7 +27,7 @@ class adminLoginSection extends Component {
           </button>
         </center>
         <div className="row justify-content-center">
-          <div className="col col-aboutCentered">
+          <div className="col centeredSingleColumn">
             {this.state.showAdminLogin && (
               <LoginForm onSuccessfulLogin={this.handleSuccessfulLogin} />
             )}
