@@ -11,8 +11,7 @@ class AreYouSureModal extends Component {
           {this.props.triggerLabel}
         </button>
         <button
-          className="btn btn-primary"
-          style={{ marginLeft: "20px" }}
+          className="btn btn-primary buttonSpacing"
           onClick={this.props.onClose}
         >
           Cancel

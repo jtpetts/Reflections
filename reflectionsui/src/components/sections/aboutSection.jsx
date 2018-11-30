@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import Background from "./../../images/Waterfall.png";
 
 class AboutSection extends Component {
-  state = {};
   render() {
     return (
       <section

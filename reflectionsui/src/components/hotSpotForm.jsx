@@ -124,8 +124,7 @@ class HotSpotForm extends Form {
           {this.renderSelect("Zoom Name", "zoomName", this.state.zoomableMaps)}
           {this.renderSubmitButton("Submit")}
           <button
-            className="btn btn-primary"
-            style={{ marginLeft: "20px" }}
+            className="btn btn-primary buttonSpacing"
             onClick={() =>
               this.props.history.replace(
                 `/hotspotseditor/${this.props.match.params.mapId}`

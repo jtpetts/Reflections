@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 import NavBar from "./components/navBar";
 import Home from "./components/home";
 import Maps from "./components/maps";

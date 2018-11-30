@@ -50,3 +50,41 @@ html,
 body {
   height: 100%;
 }
+
+.richBlue {
+  background-color: #333a4c;
+  color: white;
+}
+
+.instantRedBorder {
+  border: 1px solid red;
+}
+
+.instantBlueBorder {
+  border: 1px solid blue;
+}
+
+.buttonSpacing {
+  margin-left: 20px;
+}
+
+.lowerSpacing {
+  margin-bottom: 20px;
+}
+
+.col-aboutCentered {
+  max-width: 400px !important;
+}
+
+.centeredSingleColumn {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+.noMargin {
+  margin: 0 0 0 0 !important;
+}
+
+.noPadding {
+  padding: 0 0 0 0 !important;
+}

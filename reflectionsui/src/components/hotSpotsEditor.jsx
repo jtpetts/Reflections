@@ -61,7 +61,7 @@ class HotSpotsEditor extends Component {
       this.setState({ zoomUpId: zoomUpMap ? zoomUpMap._id : "" });
 
       // circle
-      this.setState({ showCircle: false });
+      this.setState({ showCircle: false, activePage: 0 });
     } catch (ex) {
       console.log("ex", ex);
       this.props.history.replace("/notfound");
@@ -286,23 +286,20 @@ class HotSpotsEditor extends Component {
                 />
                 <div className="row">
                   <div className="col">
-                    <h3>
+                    <button
+                      className="btn btn-primary"
+                      onClick={this.handleNewHotSpot}
+                    >
+                      New Hot Spot
+                    </button>
+                    {this.state.zoomUpId && (
                       <button
-                        className="btn btn-primary"
-                        onClick={this.handleNewHotSpot}
+                        className="btn btn-primary buttonSpacing"
+                        onClick={this.handleZoomUp}
                       >
-                        New Hot Spot
+                        Zoom Up
                       </button>
-                      {this.state.zoomUpId && (
-                        <button
-                          className="btn btn-primary"
-                          onClick={this.handleZoomUp}
-                          style={{ marginLeft: "20px" }}
-                        >
-                          Zoom Up
-                        </button>
-                      )}
-                    </h3>
+                    )}
                   </div>
                 </div>
               </div>

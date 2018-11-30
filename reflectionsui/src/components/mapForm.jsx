@@ -89,9 +89,8 @@ class MapForm extends Form {
           {this.renderSubmitButton("Submit")}
           {id && (
             <button
-              className="btn btn-primary"
+              className="btn btn-primary buttonSpacing"
               onClick={this.handleEditHotSpots}
-              style={{ marginLeft: "20px" }}
             >
               Jump to Hot Spots
             </button>

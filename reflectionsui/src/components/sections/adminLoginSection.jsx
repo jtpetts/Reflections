@@ -26,10 +26,13 @@ class adminLoginSection extends Component {
             Admin Login
           </button>
         </center>
-
-        {this.state.showAdminLogin && (
-          <LoginForm onSuccessfulLogin={this.handleSuccessfulLogin} />
-        )}
+        <div className="row justify-content-center">
+          <div className="col col-aboutCentered">
+            {this.state.showAdminLogin && (
+              <LoginForm onSuccessfulLogin={this.handleSuccessfulLogin} />
+            )}
+          </div>
+        </div>
       </section>
     );
   }

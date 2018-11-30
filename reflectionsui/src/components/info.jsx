@@ -20,7 +20,8 @@ class Info extends Component {
         position: "absolute",
         left: `${left}px`,
         top: `${top}px`,
-        opacity: 0.7,
+        margin: "0 0 0 0",
+        opacity: 0.9,
         zIndex: 99, // put the info panel on top of everything
         pointerEvents: "none" // and allow clicks to go through
       };
@@ -33,8 +34,8 @@ class Info extends Component {
             pointerEvents="none"
             display="block"
           >
-            <div className="row">
-              <div className="col">
+            <div className="row noMargin">
+              <div className="col noPadding">
                 <div
                   width={`${pointerWidth}px`}
                   height={`${pointerHeight}px`}
@@ -63,7 +64,7 @@ class Info extends Component {
                     <div className="row">
                       <div className="col">
                         <button
-                          className="btn btn-primary"
+                          className="btn btn-primary lowerSpacing"
                           style={{ pointerEvents: "auto" }}
                           onClick={() =>
                             this.props.onZoomClick(this.props.hotspot)
