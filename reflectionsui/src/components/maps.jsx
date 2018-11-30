@@ -3,7 +3,7 @@ import MapsService from "../services/mapsService";
 import Images from "../services/imageService";
 import AuthService from "../services/authService";
 import Info from "./info";
-import { mapWidth } from "../config";
+import { mapWidth, topMap } from "../config";
 
 class Maps extends Component {
   state = { map: {}, imageOffset: { x: 0, y: 0 }, breadCrumbs: [] };
@@ -20,7 +20,7 @@ class Maps extends Component {
   }
 
   initMap = (maps, mapName) => {
-    if (!mapName) mapName = "Two Cities"; // move to config
+    if (!mapName) mapName = topMap;
 
     const map = maps.find(m => m.name === mapName);
     const breadCrumbs = this.locateBreadcrumbs(maps, map);
