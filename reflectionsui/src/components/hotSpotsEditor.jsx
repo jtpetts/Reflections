@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import _ from "lodash";
+import { toast } from "react-toastify";
 import MapsService from "../services/mapsService";
 import HotSpotsService from "../services/hotSpotsService";
 import Images from "../services/imageService";
@@ -70,34 +71,43 @@ class HotSpotsEditor extends Component {
 
   handleImageClick = async event => {
     if (this.state.coordsTrackingOn && this.state.coordsTrackingHotSpot) {
-      const myLeft = event.clientX - this.refs.image.x;
-      const myTop = event.clientY - this.refs.image.y;
+      try {
+        const myLeft = event.clientX - this.refs.image.x;
+        const myTop = event.clientY - this.refs.image.y;
 
-      // rebuild the hotSpot (dropping __v, which confuses the API, maybe should move to map/hs service)
-      const hotSpot = {
-        _id: this.state.coordsTrackingHotSpot._id,
-        name: this.state.coordsTrackingHotSpot.name,
-        description: this.state.coordsTrackingHotSpot.description,
-        zoomName: this.state.coordsTrackingHotSpot.zoomName,
-        zoomId: this.state.coordsTrackingHotSpot.zoomId,
-        x: myLeft,
-        y: myTop
-      };
+        // rebuild the hotSpot (dropping __v, which confuses the API, maybe should move to map/hs service)
+        const hotSpot = {
+          _id: this.state.coordsTrackingHotSpot._id,
+          name: this.state.coordsTrackingHotSpot.name,
+          description: this.state.coordsTrackingHotSpot.description,
+          zoomName: this.state.coordsTrackingHotSpot.zoomName,
+          zoomId: this.state.coordsTrackingHotSpot.zoomId,
+          x: myLeft,
+          y: myTop
+        };
 
-      await HotSpotsService.save(this.state.map._id, hotSpot);
+        await HotSpotsService.save(this.state.map._id, hotSpot);
 
-      const new_map = this.copyMapWithoutHotSpot(hotSpot);
+        const new_map = this.copyMapWithoutHotSpot(hotSpot);
 
-      new_map.hotSpots.push(hotSpot);
-      const maps = this.replaceMapInMaps(new_map);
-      this.setState({
-        map: new_map,
-        maps,
-        coordsTrackingOn: false,
-        coordsTrackingHotSpot: null
-      });
+        new_map.hotSpots.push(hotSpot);
+        const maps = this.replaceMapInMaps(new_map);
+        this.setState({
+          map: new_map,
+          maps,
+          coordsTrackingOn: false,
+          coordsTrackingHotSpot: null
+        });
 
-      this.positionCircle(hotSpot);
+        this.positionCircle(hotSpot);
+      } catch (ex) {
+        this.toastException(ex);
+
+        this.setState({
+          coordsTrackingOn: false,
+          coordsTrackingHotSpot: null
+        });
+      }
     }
   };
 
@@ -173,6 +183,12 @@ class HotSpotsEditor extends Component {
     });
   };
 
+  toastException = ex => {
+    if (ex.response)
+      if (ex.response.status >= 400 && ex.response.status < 500)
+        toast.error(ex.response.data);
+  };
+
   handleDelete = async () => {
     // actually delete
 
@@ -196,6 +212,7 @@ class HotSpotsEditor extends Component {
     } catch (ex) {
       // restore
       this.setState({ map: originalMap, maps: originalMaps });
+      this.toastException(ex);
     }
   };
 

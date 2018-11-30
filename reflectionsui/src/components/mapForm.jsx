@@ -66,9 +66,16 @@ class MapForm extends Form {
       imageFilename: this.state.imageFilename
     };
 
-    const updatedMap = await MapsService.save(map);
-    if (updatedMap)
-      this.props.history.push(`/hotspotseditor/${updatedMap._id}`);
+    try {
+      const updatedMap = await MapsService.save(map);
+      if (updatedMap)
+        this.props.history.push(`/hotspotseditor/${updatedMap._id}`);
+    } catch (ex) {
+      const errorMessage = ex.response.data;
+      const errors = { ...this.state.errors };
+      errors["name"] = errorMessage;
+      this.setState({ errors });
+    }
   };
 
   handleEditHotSpots = () => {

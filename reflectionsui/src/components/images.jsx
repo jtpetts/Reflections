@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import _ from "lodash";
+import { toast } from "react-toastify";
 import MapsService from "../services/mapsService";
 import ImagesService from "../services/imageService";
 import ImagesTable from "./imagesTable";
@@ -85,6 +86,10 @@ class Images extends Component {
         // database.
         await this.blendImagesWithMapDb();
       } catch (ex) {
+        if (ex.response)
+          if (ex.response.status >= 400 && ex.response.status < 500)
+            toast.error(ex.response.data);
+
         this.setState({ images: originalImages });
       }
     }

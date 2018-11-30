@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import NavBar from "./components/navBar";
 import Home from "./components/home";
@@ -17,6 +19,7 @@ class App extends Component {
   render() {
     return (
       <React.Fragment>
+        <ToastContainer />
         <NavBar />
         <main className="fullHeight container" style={{ maxWidth: "none" }}>
           <Switch>
