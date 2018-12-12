@@ -9,8 +9,7 @@ class adminLoginSection extends Component {
   };
 
   handleSuccessfulLogin = () => {
-    // const { state } = this.props.location;
-    // window.location = state ? state.from.pathname : "/";
+    window.location = "/maps";
   };
 
   render() {

@@ -6,9 +6,9 @@ import HotSpotsService from "../services/hotSpotsService";
 import Images from "../services/imageService";
 import HotSpotsTable from "./hotSpotsTable";
 import Paginator from "./common/paginator";
-import Pointer from "./common/pointer";
+import VisibleHotSpot from "./visibleHotSpot";
 import AreYouSureModal from "./common/areYouSureModal";
-import { pointerHotX, pointerHotY, mapWidth } from "../config";
+import { mapWidth } from "../config";
 
 //https://moduscreate.com/blog/animated_drag_and_drop_with_react_native/
 
@@ -19,11 +19,10 @@ class HotSpotsEditor extends Component {
     sortColumn: { path: "Name", order: "asc" },
     maps: [],
     map: { name: "", hotSpots: [] },
-    circleCoords: { x: 0, y: 0 },
+    hotSpotPointer: null,
     coordsTrackingOn: false,
     coordsTrackingHotSpot: null,
     zoomUpId: "",
-    showCircle: false,
     showDeleteModal: false,
     deleteModalMessage: "",
     hotSpotToDelete: null
@@ -62,7 +61,7 @@ class HotSpotsEditor extends Component {
       this.setState({ zoomUpId: zoomUpMap ? zoomUpMap._id : "" });
 
       // circle
-      this.setState({ showCircle: false, activePage: 0 });
+      this.setState({ activePage: 0 });
     } catch (ex) {
       console.log("ex", ex);
       this.props.history.replace("/notfound");
@@ -96,16 +95,16 @@ class HotSpotsEditor extends Component {
           map: new_map,
           maps,
           coordsTrackingOn: false,
-          coordsTrackingHotSpot: null
+          coordsTrackingHotSpot: null,
+          hotSpotPointer: hotSpot
         });
-
-        this.positionCircle(hotSpot);
       } catch (ex) {
         this.toastException(ex);
 
         this.setState({
           coordsTrackingOn: false,
-          coordsTrackingHotSpot: null
+          coordsTrackingHotSpot: null,
+          hotSpotPointer: null
         });
       }
     }
@@ -126,31 +125,13 @@ class HotSpotsEditor extends Component {
     return maps;
   };
 
-  handleSetCoordsBtnMouseOver = hotSpot => {
-    this.positionCircle(hotSpot);
+  handleSetCoordsBtnMouseLeave = hotSpot => {
+    if (!this.state.coordsTrackingOn) this.setState({ hotSpotPointer: null });
   };
 
-  positionCircle = hotSpot => {
-    var divimage = this.refs.divImage.getBoundingClientRect();
-
-    // the coordinates are relative to the image
-    // the circle is relative to the column div bounding both
-    const xOffset = this.refs.image.x - divimage.x;
-    const yOffset = this.refs.image.y - divimage.y;
-
-    if (hotSpot.x && hotSpot.y)
-      this.setState({
-        circleCoords: {
-          x: hotSpot.x + xOffset - pointerHotX,
-          y: hotSpot.y + yOffset - pointerHotY
-        },
-        showCircle: true
-      });
-    else
-      this.setState({
-        circleCoords: { x: 0, y: 0 },
-        showCircle: false
-      });
+  handleSetCoordsBtnMouseOver = hotSpot => {
+    if (!this.state.coordsTrackingOn)
+      this.setState({ hotSpotPointer: hotSpot });
   };
 
   handleSetCoordinates = hotSpot => {
@@ -251,6 +232,8 @@ class HotSpotsEditor extends Component {
 
     const { itemCount, hotSpots } = this.getPagedData();
 
+    const showHotSpot = this.state.hotSpotPointer !== null;
+
     return (
       <React.Fragment>
         <div ref="element">
@@ -261,7 +244,7 @@ class HotSpotsEditor extends Component {
           </div>
           <div className="row">
             <div className="row">
-              <div ref="divImage" className="col">
+              <div ref="divImage" className="col noPadding">
                 <img
                   ref="image"
                   src={image}
@@ -270,18 +253,9 @@ class HotSpotsEditor extends Component {
                   onMouseMove={this.onMouseMove}
                   onClick={this.handleImageClick}
                 />
-                <div
-                  style={{
-                    position: "absolute",
-                    left: this.state.circleCoords.x,
-                    top: this.state.circleCoords.y,
-                    opacity: 0.7,
-                    pointerEvents: "none",
-                    display: this.state.showCircle ? "block" : "none"
-                  }}
-                >
-                  <Pointer />
-                </div>
+                {showHotSpot && (
+                  <VisibleHotSpot hotspot={this.state.hotSpotPointer} />
+                )}
               </div>
               <div className="col">
                 <HotSpotsTable
@@ -290,7 +264,8 @@ class HotSpotsEditor extends Component {
                   onDelete={this.handleDeleteWarning}
                   onSort={this.handleSort}
                   sortColumn={this.state.sortColumn}
-                  onCoordinatesMouseOver={this.handleSetCoordsBtnMouseOver}
+                  onSetCoordinatesMouseOver={this.handleSetCoordsBtnMouseOver}
+                  onSetCoordinatesMouseLeave={this.handleSetCoordsBtnMouseLeave}
                   onSetCoordinatesClick={this.handleSetCoordinates}
                   coordsTrackingHotSpot={this.state.coordsTrackingHotSpot}
                   onZoomDownClick={this.handleZoomDownClick}

@@ -24,7 +24,8 @@ class HotSpotsTable extends Component {
         key: "Coordinates",
         content: hotSpot => (
           <button
-            onMouseOver={() => this.props.onCoordinatesMouseOver(hotSpot)}
+            onMouseOver={() => this.props.onSetCoordinatesMouseOver(hotSpot)}
+            onMouseLeave={() => this.props.onSetCoordinatesMouseLeave(hotSpot)}
             onClick={() => this.props.onSetCoordinatesClick(hotSpot)}
             className={
               this.props.coordsTrackingHotSpot &&

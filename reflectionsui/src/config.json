@@ -1,8 +1,16 @@
 {
   "pointerWidth": 15,
   "pointerHeight": 21,
-  "pointerHotX": 7,
+  "pointerHotX": 8,
   "pointerHotY": 21,
   "mapWidth": 320,
-  "topMap": "Feuding Enclaves"
+  "topMap": "Feuding Enclaves",
+
+  "arrowWidth": 110,
+  "arrowHeight": 80,
+  "arrowHotX": 64,
+  "arrowHotY": 65,
+
+  "annotatorWidth": 50,
+  "annotatorHeight": 50
 }

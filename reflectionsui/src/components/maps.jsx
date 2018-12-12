@@ -3,10 +3,19 @@ import MapsService from "../services/mapsService";
 import Images from "../services/imageService";
 import AuthService from "../services/authService";
 import Info from "./info";
+import Annotator from "./annotator";
+import VisibleHotSpot from "./visibleHotSpot";
+import TutorialTip from "./tutorialTip";
 import { mapWidth, topMap } from "../config";
+import localStorageService from "../services/localStorageService";
 
 class Maps extends Component {
-  state = { map: {}, imageOffset: { x: 0, y: 0 }, breadCrumbs: [] };
+  state = {
+    map: {},
+    // imageOffset: { x: 0, y: 0 },
+    breadCrumbs: [],
+    isAnnotationOn: true
+  };
 
   async componentDidMount() {
     const maps = await MapsService.getMaps();
@@ -54,6 +63,7 @@ class Maps extends Component {
   };
 
   handleBreadCrumb = breadCrumb => {
+    localStorageService.countZoomOutClick();
     this.props.history.push(`/maps/${breadCrumb}`);
   };
 
@@ -63,6 +73,10 @@ class Maps extends Component {
 
   handleZoomClick = hotSpot => {
     this.props.history.push(`/maps/${hotSpot.zoomName}`);
+  };
+
+  handleAnnotatorClick = () => {
+    this.setState({ isAnnotationOn: !this.state.isAnnotationOn });
   };
 
   computeDistance(x1, y1, x2, y2) {
@@ -86,40 +100,28 @@ class Maps extends Component {
   }
 
   handleMouseClick = event => {
-    var divImageX = this.refs.imageXRelative.getBoundingClientRect();
-    var divImageY = this.refs.imageYRelative.getBoundingClientRect();
-
-    console.log("divImageX", divImageX);
-    console.log("divImageY", divImageY);
-    divImageX = this.refs.imageYRelative.getBoundingClientRect();
-
-    // the coordinates are relative to the image
-    // the circle is relative to the column div bounding both
-    const xOffset = this.refs.image.x - divImageX.x;
-    const yOffset = this.refs.image.y - divImageY.y;
-
-    console.log(
-      `this.refs.image: ${this.refs.image.x}  y: ${this.refs.image.y}`
-    );
-    console.log(`x: ${xOffset}  y: ${yOffset}`);
-    console.log(
-      `offset: ${this.refs.image.offsetLeft}  y: ${this.refs.image.offsetTop}`
-    );
-
-    this.setState({
-      imageOffset: {
-        x: this.refs.image.offsetLeft + xOffset,
-        y: this.refs.image.offsetTop + yOffset
-      }
-    });
-
+    // put up the info message if there is a close enough hotspot
+    // clear the info if there is not
     const closestHotspot = this.findClosestHotspot(
       event.clientX - this.refs.image.x,
       event.clientY - this.refs.image.y
     );
 
-    if (closestHotspot != null)
-      this.setState({ selectedHotSpot: closestHotspot });
+    // if clicked on same one, clear it
+    if (closestHotspot === this.state.selectedHotSpot)
+      this.setState({ selectedHotSpot: null });
+    else this.setState({ selectedHotSpot: closestHotspot });
+
+    // if the item is a zoom, zoom instead of showing info
+    // if (closestHotspot)
+    //   if (closestHotspot.zoomId)
+    //     this.props.history.push(`/maps/${closestHotspot.zoomName}`);
+
+    // clear tutorial tool tips
+    if (closestHotspot) {
+      if (closestHotspot.zoomId) localStorageService.countZoomInClick();
+      else localStorageService.countDetailClick();
+    }
   };
 
   render() {
@@ -130,6 +132,8 @@ class Maps extends Component {
     const image = Images.get(imageFilename);
 
     const user = AuthService.getCurrentUser();
+    const showAnnotations =
+      this.state.isAnnotationOn && this.state.map.hotSpots;
 
     return (
       <div className="justify-content-center richBlue fullHeight">
@@ -138,9 +142,9 @@ class Maps extends Component {
             <h2 className="text-center">{name}</h2>
           </div>
         </div>
-        <div ref="imageXRelative" className="row">
+        <div className="row">
           <div className="col centeredSingleColumn">
-            <div ref="imageYRelative" style={{ position: "relative" }}>
+            <div className="relativeBasis">
               <img
                 ref="image"
                 src={image}
@@ -149,10 +153,21 @@ class Maps extends Component {
                 onClick={this.handleMouseClick}
               />
               <Info
-                hotspot={this.state.selectedHotSpot}
-                offset={this.state.imageOffset}
                 onZoomClick={this.handleZoomClick}
+                hotspot={this.state.selectedHotSpot}
               />
+              {showAnnotations &&
+                this.state.map.hotSpots.map(h => (
+                  <VisibleHotSpot key={h._id} hotspot={h} />
+                ))}
+              {showAnnotations &&
+                this.state.map.hotSpots.map(h => (
+                  <TutorialTip
+                    key={h._id}
+                    type={h.zoomId ? "zoomIn" : "details"}
+                    target={h}
+                  />
+                ))}
             </div>
           </div>
         </div>
@@ -161,31 +176,40 @@ class Maps extends Component {
         </div>
         <div className="row">
           <div className="col centeredSingleColumn">
-            {this.state.breadCrumbs.map(b => (
-              <React.Fragment key={b}>
-                <button
-                  className="btn btn-primary btn-sm buttonSpacing lowerSpacing"
-                  onClick={() => this.handleBreadCrumb(b)}
-                >
-                  {b}
-                </button>
-                <br />
-              </React.Fragment>
-            ))}
+            <div ref="breadcrumbRelative" className="relativeBasis">
+              {this.state.breadCrumbs.map(b => (
+                <React.Fragment key={b}>
+                  <button
+                    className="btn btn-primary btn-sm buttonSpacing lowerSpacing"
+                    onClick={() => this.handleBreadCrumb(b)}
+                  >
+                    {b}
+                  </button>
+                </React.Fragment>
+              ))}
+              {this.state.breadCrumbs.length > 0 && (
+                <TutorialTip type="zoomOut" target={{ x: 120, y: 15 }} />
+              )}
+            </div>
           </div>
         </div>
-        {user && (
-          <div className="row">
-            <div className="col centeredSingleColumn">
+        <div className="row">
+          <div className="col centeredSingleColumn">
+            {user && (
               <button
                 className="btn btn-primary btn-sm"
                 onClick={this.handleEdit}
               >
                 Edit
               </button>
-            </div>
+            )}
+            <Annotator
+              className={user ? "buttonSpacing" : ""}
+              onClick={this.handleAnnotatorClick}
+              isAnnotationOn={this.state.isAnnotationOn}
+            />
           </div>
-        )}
+        </div>
       </div>
     );
   }
