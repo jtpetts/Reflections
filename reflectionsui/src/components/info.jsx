@@ -63,7 +63,8 @@ class Info extends PositionableComponent {
                 className="container"
                 style={{
                   backgroundColor: "ivory",
-                  color: "black"
+                  color: "black",
+                  minWidth: minWidth
                 }}
               >
                 <div className="row">

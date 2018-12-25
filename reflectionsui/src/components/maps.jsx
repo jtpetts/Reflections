@@ -102,9 +102,15 @@ class Maps extends Component {
   handleMouseClick = event => {
     // put up the info message if there is a close enough hotspot
     // clear the info if there is not
+    const rect = this.refs.image.getBoundingClientRect();
+    const imageCorner = {
+      x: rect.x ? rect.x : rect.left, // browser compatibility, IE doesn't have x,y
+      y: rect.y ? rect.y : rect.top
+    };
+
     const closestHotspot = this.findClosestHotspot(
-      event.clientX - this.refs.image.x,
-      event.clientY - this.refs.image.y
+      event.clientX - imageCorner.x,
+      event.clientY - imageCorner.y
     );
 
     // if clicked on same one, clear it

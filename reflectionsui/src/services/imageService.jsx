@@ -12,7 +12,7 @@ import imageMoonGarden from "../images/MoonGarden.jpg";
 import imageThroneRoom from "../images/ThroneRoom.jpg";
 import imageCursedForest from "../images/CursedForest.jpg";
 import imageEiserune from "../images/Eiserune.jpg";
-import imageUnderMountain from "../images/Undermountain.jpg";
+import imageDeepfort from "../images/Deepfort.jpg";
 
 const imageList = [
   { imageFilename: "FeudingEnclaves.jpg", image: imageFeudingEnclaves },
@@ -29,7 +29,7 @@ const imageList = [
   { imageFilename: "ThroneRoom.jpg", image: imageThroneRoom },
   { imageFilename: "CursedForest.jpg", image: imageCursedForest },
   { imageFilename: "Eiserune.jpg", image: imageEiserune },
-  { imageFilename: "Undermountain.jpg", image: imageUnderMountain }
+  { imageFilename: "Deepfort.jpg", image: imageDeepfort }
 ];
 
 function get(imageFilename) {
