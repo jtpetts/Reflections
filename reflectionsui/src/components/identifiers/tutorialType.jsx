@@ -1,6 +1,8 @@
 import imageGreenArrow from "../../images/arrow green.png";
 import imageBlueArrow from "../../images/arrow blue.png";
+import imageBackArrow from "../../images/arrow back.png";
 import localStorageService from "../../services/localStorageService";
+import { arrowWidth, arrowHeight, arrowHotX, arrowHotY } from "../../config";
 
 const zoomIn = "zoomIn";
 const zoomOut = "zoomOut";
@@ -8,7 +10,7 @@ const details = "details";
 
 function getMessage(type) {
   if (type === zoomIn) return "Click to zoom";
-  if (type === zoomOut) return "To zoom out";
+  if (type === zoomOut) return "Click to return";
   if (type === details) return "Click for details";
 
   return "";
@@ -30,6 +32,15 @@ function getImage(type) {
   return imageGreenArrow;
 }
 
+function getDims(type) {
+  return {
+    width: arrowWidth,
+    height: arrowHeight,
+    hotX: arrowHotX,
+    hotY: arrowHotY
+  };
+}
+
 function isTutorialTipActive(type) {
   if (type === zoomIn) return localStorageService.isZoomInActive();
   if (type === zoomOut) return localStorageService.isZoomOutActive();
@@ -42,5 +53,6 @@ export default {
   getMessage,
   getTextColor,
   getImage,
+  getDims,
   isTutorialTipActive
 };

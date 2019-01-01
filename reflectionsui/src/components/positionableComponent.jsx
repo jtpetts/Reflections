@@ -1,19 +1,12 @@
 import { Component } from "react";
+import { mapWidth } from "../config";
 
 class PositionableComponent extends Component {
-  getStyle = (target, point) => {
-    const left = target.x - point.x;
-    const top = target.y - point.y;
-
-    // console.log(`target  x:${target.x}  y:${target.y}`);
-    // console.log("point", point);
-    // console.log("left", left);
-    // console.log("top", top);
-
+  getStyle = target => {
     const positioningStyle = {
       position: "absolute",
-      left: `${left}px`,
-      top: `${top}px`,
+      left: `${target.x / (mapWidth / 100)}%`,
+      top: `${target.y / (mapWidth / 100)}%`,
       margin: "0 0 0 0"
     };
 

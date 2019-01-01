@@ -68,6 +68,10 @@ body {
   margin-left: 20px;
 }
 
+.tinySpacing {
+  margin-left: 10px;
+}
+
 .lowerSpacing {
   margin-bottom: 20px;
 }
@@ -85,6 +89,17 @@ body {
   padding: 0 0 0 0 !important;
 }
 
+.nakedButton {
+  padding: 0 0 0 0 !important;
+  background-color: Transparent !important;
+  outline: none !important;
+  border: none !important;
+}
+
 .relativeBasis {
   position: relative;
+}
+
+.zoomButton {
+  background-color: #5abeb6 !important;
 }

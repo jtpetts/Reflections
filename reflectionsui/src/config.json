@@ -1,10 +1,15 @@
 {
-  "pointerWidth": 15,
-  "pointerHeight": 21,
-  "pointerHotX": 8,
-  "pointerHotY": 21,
+  "pointerWidth": 20,
+  "pointerHeight": 20,
+  "pointerHotX": 0,
+  "pointerHotY": 0,
   "mapWidth": 320,
   "topMap": "Feuding Enclaves",
+
+  "namedWidth": 89,
+  "namedHeight": 20,
+  "namedHotX": 0,
+  "namedHotY": 0,
 
   "arrowWidth": 110,
   "arrowHeight": 80,

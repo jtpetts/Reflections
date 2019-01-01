@@ -19,7 +19,8 @@ function isTipActive(key) {
 }
 
 function isDetailsActive() {
-  return isTipActive(details);
+  return false;
+  //  return isTipActive(details);
 }
 
 function countDetailClick() {
@@ -27,7 +28,8 @@ function countDetailClick() {
 }
 
 function isZoomInActive() {
-  return isTipActive(zoomIn);
+  return false;
+  //  return isTipActive(zoomIn);
 }
 
 function countZoomInClick() {
@@ -42,11 +44,36 @@ function countZoomOutClick() {
   increment(zoomOut);
 }
 
+const mapKey = "mapKey";
+
+function getMapsArray() {
+  var foundMaps = localStorage.getItem(mapKey);
+  if (!foundMaps) foundMaps = "";
+  return foundMaps.split(",");
+}
+
+function foundMap(mapId) {
+  const maps = getMapsArray();
+  const map = maps.find(m => m === mapId);
+
+  if (!map) {
+    maps.push(mapId);
+    // remove any blank entries and then convert to CSV
+    localStorage.setItem(mapKey, maps.filter(m => m).join(","));
+  }
+}
+
+function countFoundMaps() {
+  return getMapsArray().length;
+}
+
 export default {
   isDetailsActive,
   countDetailClick,
   isZoomInActive,
   countZoomInClick,
   isZoomOutActive,
-  countZoomOutClick
+  countZoomOutClick,
+  foundMap,
+  countFoundMaps
 };

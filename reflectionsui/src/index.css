@@ -17,6 +17,10 @@ code {
   height: 100%;
 }
 
+.fullWorld {
+  min-height: 100%;
+}
+
 .fullSection {
   height: 100%;
   width: 100%;

@@ -2,22 +2,40 @@ import React, { Component } from "react";
 import MapsService from "../services/mapsService";
 import Images from "../services/imageService";
 import AuthService from "../services/authService";
+import localStorageService from "../services/localStorageService";
+import imageBackArrow from "../images/arrow back.png";
+import Pointer from "./common/pointer";
 import Info from "./info";
 import Annotator from "./annotator";
-import VisibleHotSpot from "./visibleHotSpot";
 import TutorialTip from "./tutorialTip";
+import Explorations from "./explorations";
 import { mapWidth, topMap } from "../config";
-import localStorageService from "../services/localStorageService";
 
 class Maps extends Component {
   state = {
     map: {},
-    // imageOffset: { x: 0, y: 0 },
     breadCrumbs: [],
-    isAnnotationOn: true
+    isAnnotationOn: true,
+    imageWidth: 50
   };
 
+  updateDimensions = () => {
+    if (this.refs.image) {
+      const rect = this.refs.image.getBoundingClientRect();
+      if (rect.width !== this.state.imageWidth)
+        this.setState({ imageWidth: rect.width });
+    }
+  };
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateDimensions);
+  }
+
   async componentDidMount() {
+    // store the image width, it shifts as the browser is resized. Force a re-render by changing state.
+    this.updateDimensions();
+    window.addEventListener("resize", this.updateDimensions);
+
     const maps = await MapsService.getMaps();
     this.setState({ maps });
 
@@ -35,6 +53,9 @@ class Maps extends Component {
     const breadCrumbs = this.locateBreadcrumbs(maps, map);
 
     this.setState({ breadCrumbs, map, selectedHotSpot: null });
+
+    // add this map to the found list
+    if (map._id) localStorageService.foundMap(map._id);
   };
 
   findHotSpotWithZoomName = searchMapName => {
@@ -58,7 +79,7 @@ class Maps extends Component {
       if (breadCrumbs.length > 10) break;
     } while (parent);
 
-    breadCrumbs.reverse(); // visually best with top of tree on the top
+    breadCrumbs.reverse(); // visually best with top of tree first
     return breadCrumbs;
   };
 
@@ -87,8 +108,16 @@ class Maps extends Component {
     var closestDist = 10000;
     var closestHotspot;
 
+    const rect = this.refs.image.getBoundingClientRect();
+    const hotSpotToImageRatio = rect.width / mapWidth;
+
     this.state.map.hotSpots.forEach(hotspot => {
-      var dist = this.computeDistance(hotspot.x, hotspot.y, inX, inY);
+      var dist = this.computeDistance(
+        hotspot.x * hotSpotToImageRatio,
+        hotspot.y * hotSpotToImageRatio,
+        inX,
+        inY
+      );
       if (dist < closestDist) {
         closestDist = dist;
         closestHotspot = hotspot;
@@ -100,6 +129,8 @@ class Maps extends Component {
   }
 
   handleMouseClick = event => {
+    this.updateDimensions();
+
     // put up the info message if there is a close enough hotspot
     // clear the info if there is not
     const rect = this.refs.image.getBoundingClientRect();
@@ -141,11 +172,16 @@ class Maps extends Component {
     const showAnnotations =
       this.state.isAnnotationOn && this.state.map.hotSpots;
 
+    const selectedHotSpot = this.state.selectedHotSpot;
+
     return (
-      <div className="justify-content-center richBlue fullHeight">
+      <div className="justify-content-center richBlue fullWorld">
         <div className="row">
           <div className="col">
             <h2 className="text-center">{name}</h2>
+            <Explorations
+              mapCount={this.state.maps ? this.state.maps.length : 0}
+            />
           </div>
         </div>
         <div className="row">
@@ -155,17 +191,32 @@ class Maps extends Component {
                 ref="image"
                 src={image}
                 alt={"Map"}
-                width={mapWidth}
+                style={{
+                  maxWidth: `${mapWidth * 2}px`,
+                  width: "100%",
+                  height: "auto"
+                }}
                 onClick={this.handleMouseClick}
               />
               <Info
                 onZoomClick={this.handleZoomClick}
-                hotspot={this.state.selectedHotSpot}
+                hotspot={selectedHotSpot}
+                imageWidth={this.state.imageWidth}
               />
               {showAnnotations &&
-                this.state.map.hotSpots.map(h => (
-                  <VisibleHotSpot key={h._id} hotspot={h} />
-                ))}
+                this.state.map.hotSpots.map(
+                  h =>
+                    (!selectedHotSpot ||
+                      (selectedHotSpot && selectedHotSpot !== h)) && (
+                      <Pointer
+                        type={h.zoomId ? "zoom" : "info"}
+                        size="named"
+                        key={h._id}
+                        hotspot={h}
+                        onZoomClick={this.handleZoomClick}
+                      />
+                    )
+                )}
               {showAnnotations &&
                 this.state.map.hotSpots.map(h => (
                   <TutorialTip
@@ -184,18 +235,15 @@ class Maps extends Component {
           <div className="col centeredSingleColumn">
             <div ref="breadcrumbRelative" className="relativeBasis">
               {this.state.breadCrumbs.map(b => (
-                <React.Fragment key={b}>
-                  <button
-                    className="btn btn-primary btn-sm buttonSpacing lowerSpacing"
-                    onClick={() => this.handleBreadCrumb(b)}
-                  >
-                    {b}
-                  </button>
-                </React.Fragment>
+                <button
+                  key={b}
+                  className="btn btn-primary btn-sm zoomButton buttonSpacing lowerSpacing"
+                  onClick={() => this.handleBreadCrumb(b)}
+                >
+                  <img src={imageBackArrow} alt="backArrow" />
+                  <span className="tinySpacing">{b}</span>
+                </button>
               ))}
-              {this.state.breadCrumbs.length > 0 && (
-                <TutorialTip type="zoomOut" target={{ x: 120, y: 15 }} />
-              )}
             </div>
           </div>
         </div>
@@ -203,14 +251,14 @@ class Maps extends Component {
           <div className="col centeredSingleColumn">
             {user && (
               <button
-                className="btn btn-primary btn-sm"
+                className="btn btn-primary btn-sm lowerSpacing"
                 onClick={this.handleEdit}
               >
                 Edit
               </button>
             )}
             <Annotator
-              className={user ? "buttonSpacing" : ""}
+              className={user ? "buttonSpacing lowerSpacing" : ""}
               onClick={this.handleAnnotatorClick}
               isAnnotationOn={this.state.isAnnotationOn}
             />

@@ -6,7 +6,7 @@ import HotSpotsService from "../services/hotSpotsService";
 import Images from "../services/imageService";
 import HotSpotsTable from "./hotSpotsTable";
 import Paginator from "./common/paginator";
-import VisibleHotSpot from "./visibleHotSpot";
+import Pointer from "./common/pointer";
 import AreYouSureModal from "./common/areYouSureModal";
 import { mapWidth } from "../config";
 
@@ -236,26 +236,37 @@ class HotSpotsEditor extends Component {
 
     return (
       <React.Fragment>
-        <div ref="element">
+        <div>
           <div className="row">
             <div className="col">
-              <h2>Hot Spots for {this.state.map.name}</h2>
+              <h2 className="text-center">
+                Hot Spots for {this.state.map.name}
+              </h2>
             </div>
           </div>
-          <div className="row">
+          <div className="row justify-content-center">
             <div className="row">
-              <div ref="divImage" className="col noPadding">
-                <img
-                  ref="image"
-                  src={image}
-                  alt={name}
-                  width={mapWidth}
-                  onMouseMove={this.onMouseMove}
-                  onClick={this.handleImageClick}
-                />
-                {showHotSpot && (
-                  <VisibleHotSpot hotspot={this.state.hotSpotPointer} />
-                )}
+              <div className="col centeredSingleColumn">
+                <div
+                  className="relativeBasis"
+                  style={{ width: mapWidth, height: mapWidth }}
+                >
+                  <img
+                    ref="image"
+                    src={image}
+                    alt={name}
+                    width={mapWidth}
+                    onMouseMove={this.onMouseMove}
+                    onClick={this.handleImageClick}
+                  />
+                  {showHotSpot && (
+                    <Pointer
+                      hotspot={this.state.hotSpotPointer}
+                      type={this.state.hotSpotPointer.zoomId ? "zoom" : "info"}
+                      size="pointer"
+                    />
+                  )}
+                </div>
               </div>
               <div className="col">
                 <HotSpotsTable
