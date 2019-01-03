@@ -9,7 +9,7 @@ class Info extends PositionableComponent {
     if (!hotspot) return null;
 
     // position the text block
-    const minWidth = mapWidth * 0.6;
+    const minWidth = mapWidth * 0.5;
     const imageWidth = mapWidth;
     const target = {
       x: hotspot.x + minWidth > imageWidth ? imageWidth - minWidth : hotspot.x,
