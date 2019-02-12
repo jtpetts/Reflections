@@ -37,7 +37,8 @@ function countZoomInClick() {
 }
 
 function isZoomOutActive() {
-  return isTipActive(zoomOut);
+  return false;
+  //  return isTipActive(zoomOut);
 }
 
 function countZoomOutClick() {

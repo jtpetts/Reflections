@@ -1,29 +1,30 @@
 import React, { Component } from "react";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import MapsService from "../services/mapsService";
-import Images from "../services/imageService";
 import AuthService from "../services/authService";
 import localStorageService from "../services/localStorageService";
 import imageBackArrow from "../images/arrow back.png";
-import Pointer from "./common/pointer";
-import Info from "./info";
+import AnnotatedMap from "./annotatedMap";
 import Annotator from "./annotator";
-import TutorialTip from "./tutorialTip";
 import Explorations from "./explorations";
-import { mapWidth, topMap } from "../config";
+import { topMap, mapWidth } from "../config";
 
 class Maps extends Component {
   state = {
     map: {},
     breadCrumbs: [],
     isAnnotationOn: true,
-    imageWidth: 50
+    imageDim: 10
   };
 
+  // When absolute positioning is used, divs lose their dimensions.
+  // Compute the maximum width of the screen and force the div that holds the
+  // image to a minimum width and height so the image will occupy space properly.
+  // This dimension is also needed to properly place the hotspots on the image.
   updateDimensions = () => {
-    if (this.refs.image) {
-      const rect = this.refs.image.getBoundingClientRect();
-      if (rect.width !== this.state.imageWidth)
-        this.setState({ imageWidth: rect.width });
+    if (this.refs.imageDiv) {
+      const rect = this.refs.imageDiv.getBoundingClientRect();
+      this.setState({ imageDim: rect.width });
     }
   };
 
@@ -100,50 +101,7 @@ class Maps extends Component {
     this.setState({ isAnnotationOn: !this.state.isAnnotationOn });
   };
 
-  computeDistance(x1, y1, x2, y2) {
-    return Math.abs(Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)));
-  }
-
-  findClosestHotspot(inX, inY) {
-    var closestDist = 10000;
-    var closestHotspot;
-
-    const rect = this.refs.image.getBoundingClientRect();
-    const hotSpotToImageRatio = rect.width / mapWidth;
-
-    this.state.map.hotSpots.forEach(hotspot => {
-      var dist = this.computeDistance(
-        hotspot.x * hotSpotToImageRatio,
-        hotspot.y * hotSpotToImageRatio,
-        inX,
-        inY
-      );
-      if (dist < closestDist) {
-        closestDist = dist;
-        closestHotspot = hotspot;
-      }
-    });
-
-    if (closestDist < 100) return closestHotspot;
-    return null;
-  }
-
-  handleMouseClick = event => {
-    this.updateDimensions();
-
-    // put up the info message if there is a close enough hotspot
-    // clear the info if there is not
-    const rect = this.refs.image.getBoundingClientRect();
-    const imageCorner = {
-      x: rect.x ? rect.x : rect.left, // browser compatibility, IE doesn't have x,y
-      y: rect.y ? rect.y : rect.top
-    };
-
-    const closestHotspot = this.findClosestHotspot(
-      event.clientX - imageCorner.x,
-      event.clientY - imageCorner.y
-    );
-
+  handleHotSpotClick = closestHotspot => {
     // if clicked on same one, clear it
     if (closestHotspot === this.state.selectedHotSpot)
       this.setState({ selectedHotSpot: null });
@@ -165,14 +123,11 @@ class Maps extends Component {
     const name = this.state.map.name
       ? this.state.map.name
       : "Loading maps, please wait.";
-    const imageFilename = this.state.map ? this.state.map.imageFilename : "";
-    const image = Images.get(imageFilename);
 
     const user = AuthService.getCurrentUser();
-    const showAnnotations =
-      this.state.isAnnotationOn && this.state.map.hotSpots;
 
-    const selectedHotSpot = this.state.selectedHotSpot;
+    const imageDim =
+      this.state.imageDim > mapWidth * 2 ? mapWidth * 2 : this.state.imageDim;
 
     return (
       <div className="justify-content-center richBlue fullWorld">
@@ -185,46 +140,29 @@ class Maps extends Component {
           </div>
         </div>
         <div className="row">
-          <div className="col centeredSingleColumn">
-            <div className="relativeBasis">
-              <img
-                ref="image"
-                src={image}
-                alt={"Map"}
-                style={{
-                  maxWidth: `${mapWidth * 2}px`,
-                  width: "100%",
-                  height: "auto"
-                }}
-                onClick={this.handleMouseClick}
-              />
-              <Info
-                onZoomClick={this.handleZoomClick}
-                hotspot={selectedHotSpot}
-                imageWidth={this.state.imageWidth}
-              />
-              {showAnnotations &&
-                this.state.map.hotSpots.map(
-                  h =>
-                    (!selectedHotSpot ||
-                      (selectedHotSpot && selectedHotSpot !== h)) && (
-                      <Pointer
-                        type={h.zoomId ? "zoom" : "info"}
-                        size="named"
-                        key={h._id}
-                        hotspot={h}
-                        onZoomClick={this.handleZoomClick}
-                      />
-                    )
-                )}
-              {showAnnotations &&
-                this.state.map.hotSpots.map(h => (
-                  <TutorialTip
-                    key={h._id}
-                    type={h.zoomId ? "zoomIn" : "details"}
-                    target={h}
+          <div className="col centeredSingleColumn" ref="imageDiv">
+            <div
+              style={{
+                width: `${imageDim}px`,
+                height: `${imageDim}px`
+              }}
+            >
+              <TransitionGroup className="relativeBasis">
+                <CSSTransition
+                  key={this.state.map._id}
+                  timeout={1000}
+                  classNames="fade"
+                >
+                  <AnnotatedMap
+                    map={this.state.map}
+                    selectedHotSpot={this.state.selectedHotSpot}
+                    onZoomClick={this.handleZoomClick}
+                    onHotSpotClick={this.handleHotSpotClick}
+                    isAnnotationOn={this.state.isAnnotationOn}
+                    imageDim={imageDim}
                   />
-                ))}
+                </CSSTransition>
+              </TransitionGroup>
             </div>
           </div>
         </div>

@@ -16,7 +16,8 @@
     "react-responsive-modal": "^3.5.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.1",
-    "react-toastify": "^4.4.3"
+    "react-toastify": "^4.4.3",
+    "react-transition-group": "^2.5.3"
   },
   "scripts": {
     "start": "react-scripts start",
