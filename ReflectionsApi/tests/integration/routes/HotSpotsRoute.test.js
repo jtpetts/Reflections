@@ -8,7 +8,7 @@ let server;
 describe("/api/Maps", () => {
   beforeEach(async () => {
     server = require("../../../index");
-    await MapModel.remove({});
+    await MapModel.deleteMany({});
   });
 
   afterEach(async () => {
@@ -164,7 +164,7 @@ describe("/api/Maps", () => {
     });
 
     it("should return 400 if a bogus mapid is passed", async () => {
-      targetMapId = "aaaaabogusxxxxx";
+      targetMapId = "aaaabbbbcccc11112222333x";
 
       const response = await execute();
 
@@ -180,7 +180,7 @@ describe("/api/Maps", () => {
     });
 
     it("should return 400 if a bogus hotspotid is passed", async () => {
-      targetHotSpotId = "aaaaabogusxxxxx";
+      targetHotSpotId = "aaaabbbbcccc11112222333x";
 
       const response = await execute();
 
@@ -315,7 +315,7 @@ describe("/api/Maps", () => {
     });
 
     it("should return an error if the map id is bogus", async () => {
-      targetMapId = "aaaaabogusxxxxx";
+      targetMapId = "aaaabbbbcccc11112222333x";
 
       const response = await execute();
 

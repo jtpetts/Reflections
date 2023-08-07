@@ -7,7 +7,7 @@ let server;
 describe("/api/Auth", () => {
   beforeEach(async () => {
     server = require("../../../index");
-    await UserModel.remove({});
+    await UserModel.deleteMany({});
   });
 
   afterEach(() => {

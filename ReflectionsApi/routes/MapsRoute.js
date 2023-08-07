@@ -145,7 +145,7 @@ router.delete(
   admin,
   asyncMiddleware(async (request, response) => {
     const map = await MapModel.deleteOne({ _id: request.params.id });
-    if (map.n == 0)
+    if (map.deletedCount == 0)
       return response
         .status(404)
         .send("The map with the given id was not found");

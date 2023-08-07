@@ -1,5 +1,7 @@
 ﻿const Joi = require("joi");
 Joi.objectId = require("joi-objectid")(Joi);
+global.TextEncoder = require("util").TextEncoder; // due to bug in mongoose
+global.TextDecoder = require("util").TextDecoder;
 const mongoose = require("mongoose");
 
 const hotSpotSchema = new mongoose.Schema({
@@ -23,8 +25,8 @@ const hotSpotSchema = new mongoose.Schema({
     type: String,
     trim: true,
     required: false,
-    minLength: 3,
-    maxLength: 50
+    minLength: 0,
+    maxLength: 100
   },
   zoomId: {
     type: mongoose.Schema.Types.ObjectId,

@@ -11,10 +11,10 @@ describe('auth middleware', () => {
 
     beforeEach(async () => {
         server = require('../../../index');
-        await UserModel.remove({});
+        await UserModel.deleteMany({});
 
         const users = await insertUser();
-        token = new UserModel(_.pick(users.ops[0], ['_id', 'name', 'email'])).generateAuthToken();
+        token = new UserModel(_.pick(users, ['_id', 'name', 'email'])).generateAuthToken();
     });
 
     afterEach(async () => {
@@ -26,13 +26,21 @@ describe('auth middleware', () => {
         const salt = await bcrypt.genSalt(10);
         hashedPassword = await bcrypt.hash('wierdisspelledwrong', salt);
 
-        return await UserModel.collection.insertMany([
+        const inserted = await UserModel.collection.insertMany([
             {
                 name: 'siby',
                 email: 'siby@gmail.com',
                 password: hashedPassword,
             }
         ]);
+
+        const user = await UserModel.collection.findOne({ _id: inserted.insertedIds['0'] });
+
+        return {    // drop the password
+            _id: user._id,
+            name: user.name,
+            email: user.email
+        };
     }
 
     const execute = () => {
@@ -74,7 +82,7 @@ describe('/api/Auth', () => {
 
     beforeEach(async () => {
         server = require('../../../index');
-        await UserModel.remove({});
+        await UserModel.deleteMany({});
     });
 
     afterEach(() => {

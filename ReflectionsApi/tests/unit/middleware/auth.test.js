@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 describe('auth middleware', () => {
     it('should populate req.user with the payload of a valid JWT', () => {
         const user = {
-            _id: mongoose.Types.ObjectId().toHexString(),
+            _id: ( new mongoose.Types.ObjectId() ).toHexString(),
             roles: 'abiding'
         };
         const token = new UserModel(user).generateAuthToken();

@@ -7,27 +7,27 @@
     "test": "jest --watchAll --runInBand --coverage"
   },
   "engines": {
-    "node": "8.12.0"
+    "node": "18.17.0"
   },
   "author": {
     "name": ""
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "config": "^1.29.2",
+    "config": "^1.31.0",
     "cors": "^2.8.5",
-    "express": "^4.16.4",
+    "express": "^4.18.2",
     "express-async-errors": "^3.1.1",
-    "joi": "^14.0.1",
+    "joi": "^14.3.1",
     "joi-objectid": "^2.0.0",
-    "jsonwebtoken": "^8.3.0",
-    "lodash": "^4.17.11",
-    "mongoose": "^5.3.6",
-    "winston": "^3.1.0",
-    "winston-mongodb": "^4.0.3"
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "mongoose": "7.4.2",
+    "winston": "^3.10.0",
+    "winston-mongodb": "^4.0.9"
   },
   "devDependencies": {
-    "supertest": "^3.3.0",
-    "jest": "^23.6.0"
+    "jest": "^29.6.0",
+    "supertest": "^3.4.2"
   }
 }

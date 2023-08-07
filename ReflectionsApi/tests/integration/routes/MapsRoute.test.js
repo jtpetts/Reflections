@@ -8,7 +8,7 @@ let server;
 describe("/api/Maps", () => {
   beforeEach(async () => {
     server = require("../../../index");
-    await MapModel.remove({});
+    await MapModel.deleteMany({});
   });
 
   afterEach(async () => {
